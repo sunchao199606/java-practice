@@ -85,4 +85,13 @@ public class MD5Util {
 		}
 		return md.digest();
 	}
+
+	public static void main(String[] args) {
+		String md51 = MD5Util.md5(new File(
+				"E:\\89754\\weixin\\WeChat Files\\s_cgogogo\\FileStorage\\File\\2019-09\\cn.com.agree.ab.a4.client.adore.aft_4.0.0.201908221056.jar"));
+	    String md52 = MD5Util.md5(new File(
+				"E:\\work\\插件导出\\200\\plugins\\cn.com.agree.ab.a4.client.adore.aft_4.0.0.201909192157.jar"));
+		System.out.println(md51);
+	    System.out.println(md52);
+	}
 }

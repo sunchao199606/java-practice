@@ -1,7 +1,7 @@
 package cn.com.sunchao.javaApi;
 
 public class StringCatTest {
-	
+
 	public static void main(String[] args) {
 		printResult(100);
 		System.out.println("***********************************************");
@@ -27,6 +27,7 @@ public class StringCatTest {
 	public static long stringCat(long loopCount) {
 		long beginTime = System.currentTimeMillis();
 		String str = "hello,world!";
+		@SuppressWarnings("unused")
 		String result = "";
 
 		for (int i = 0; i < loopCount; i++) {
@@ -40,6 +41,7 @@ public class StringCatTest {
 	public static long stringBuilderAppend(long loopCount) {
 		long beginTime = System.currentTimeMillis();
 		String str = "hello, world!";
+		@SuppressWarnings("unused")
 		String result = "";
 		StringBuilder stringBuilder = new StringBuilder();
 
@@ -56,6 +58,7 @@ public class StringCatTest {
 	public static long stringBufferAppend(long loopCount) {
 		long beginTime = System.currentTimeMillis();
 		String str = "hello, world!";
+		@SuppressWarnings("unused")
 		String result = "";
 		StringBuffer stringBuffer = new StringBuffer();
 

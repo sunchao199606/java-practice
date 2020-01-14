@@ -5,17 +5,11 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalQuery;
-import java.time.temporal.TemporalUnit;
-import java.util.List;
-
-import cn.com.sunchao.encode.CompareEncode;
 
 public class DateTimeDemo {
 
+	@SuppressWarnings("unused")
 	private static void localDateTime() {
 		LocalDate date = LocalDate.now();
 		// 计算本日期所属周的周几日期
@@ -28,6 +22,7 @@ public class DateTimeDemo {
 		System.out.println(date.until(date.with(TemporalAdjusters.lastDayOfYear()), ChronoUnit.DAYS));
 	}
 
+	@SuppressWarnings("unused")
 	private static void period() {
 		Period period = Period.between(LocalDate.of(2019, 9, 19), LocalDate.of(2019, 10, 18));
 

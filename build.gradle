@@ -32,6 +32,8 @@ dependencies {
     implementation 'com.google.guava:guava:27.1-jre'
     compile 'commons-codec:commons-codec:1.10'
     compile 'com.alibaba:fastjson:1.2.54'
+    // https://mvnrepository.com/artifact/cglib/cglib
+    compile 'cglib:cglib:3.2.5'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'

@@ -34,6 +34,8 @@ dependencies {
     compile 'com.alibaba:fastjson:1.2.54'
     // https://mvnrepository.com/artifact/cglib/cglib
     compile 'cglib:cglib:3.2.5'
+    // https://mvnrepository.com/artifact/org.apache.mina/mina-core
+    compile group: 'org.apache.mina', name: 'mina-core', version: '2.0.7'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'

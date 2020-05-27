@@ -1,6 +1,7 @@
 package cn.com.sunchao.algorithm;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @Description : 算法结果测试

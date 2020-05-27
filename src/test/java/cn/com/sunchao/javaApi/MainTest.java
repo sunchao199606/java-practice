@@ -1,6 +1,8 @@
 package cn.com.sunchao.javaApi;
 
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
@@ -12,8 +14,9 @@ import java.time.Duration;
 public class MainTest {
     @Test
     public void testDuration() {
-        Duration duration = Duration.ofMinutes(110);
-        System.out.println((float) duration.toHours());
+        Duration duration = Duration.ofHours(3);
+        System.out.println(duration.toHours());
+        System.out.println(duration.toMinutes());
 //        LocalTime lt = LocalTime.now();
 //        System.out.println(lt.getHour() + lt.getMinute());
 //        System.out.println(Float.compare(1,1.5f));

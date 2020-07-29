@@ -1,7 +1,6 @@
 package cn.com.sunchao.javaApi;
 
 
-
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -21,5 +20,13 @@ public class MainTest {
 //        System.out.println(lt.getHour() + lt.getMinute());
 //        System.out.println(Float.compare(1,1.5f));
         System.out.println((long) 100 / 66);
+    }
+
+    @Test
+    public void testAcc() {
+        float f = 321.1415926f;
+        int i = 100;
+        //float af = Math.round(f * 100) / 100f;
+        System.out.println(f * i);
     }
 }

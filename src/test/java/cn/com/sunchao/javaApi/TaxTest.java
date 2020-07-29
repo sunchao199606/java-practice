@@ -44,7 +44,7 @@ public class TaxTest {
     }
 
     public static void main(String[] args) {
-        int[] allIncomes = new int[]{14387, 8307, 4486, 8323, 8323, 8323};
+        int[] allIncomes = new int[]{12457};
         float payedTax = 0;
         for (int i = 1; i <= allIncomes.length; i++) {
             int[] incomes = Arrays.copyOfRange(allIncomes, 0, i);

@@ -5,7 +5,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 当等待的线程个数达到指定数据的时候notifyAll
+ * 当阻塞的线程个数达到指定个数的时候，同时将全部等待线程notifyAll
  */
 public class CycleBarrier {
 

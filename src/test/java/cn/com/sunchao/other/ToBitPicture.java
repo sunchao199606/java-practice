@@ -19,7 +19,6 @@ public class ToBitPicture {
 		try {
 			ImageIO.write(img_1bit, "BMP", new File("test.bmp"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

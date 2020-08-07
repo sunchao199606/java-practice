@@ -1,4 +1,4 @@
-package cn.com.sunchao.javaApi;
+package cn.com.sunchao.java8;
 
 public class ThreadLocalDemo {
 

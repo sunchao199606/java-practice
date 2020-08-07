@@ -15,4 +15,8 @@ public class ConcurrentTest {
         newThread.join();
         System.out.println("main thread run");
     }
+
+    public void testPrintNum(){
+
+    }
 }

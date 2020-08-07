@@ -1,4 +1,4 @@
-package cn.com.sunchao.javaApi.ssl;
+package cn.com.sunchao.java8.ssl;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;

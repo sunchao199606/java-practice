@@ -1,4 +1,4 @@
-package cn.com.sunchao.javaApi;
+package cn.com.sunchao.java8;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

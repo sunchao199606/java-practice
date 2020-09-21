@@ -5,17 +5,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 
 public class Person extends Human {
-	@SuppressWarnings("unused")
-	private static LocalDate birthday = LocalDate.of(1996, 6, 16);
+    @SuppressWarnings("unused")
+    private static LocalDate birthday = LocalDate.of(1996, 6, 16);
 
-	public Person() {
+    public Person() {
 
-	}
+    }
 
-	public static void main(String[] args)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchFieldException, SecurityException, NoSuchMethodException {
-		Class<Person> clazz = Person.class;
+    public static void main(String[] args)
+            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+            NoSuchFieldException, SecurityException, NoSuchMethodException {
+        Class<Person> clazz = Person.class;
 //		Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 //		Field[] fields = clazz.getDeclaredFields();
 //		clazz.getMethod("name");
@@ -27,8 +27,10 @@ public class Person extends Human {
 //			@SuppressWarnings("unused")
 //			Person person = (Person) constructor.newInstance();
 //		}
-		@SuppressWarnings("unused")
-		Field field = clazz.getDeclaredField("birthday");
-		// field.get()
-	}
+        @SuppressWarnings("unused")
+        Field field = clazz.getDeclaredField("birthday");
+        field.getModifiers();
+        // field.get()
+        int[][][][][][][][][][][][][][] ints = new int[][][][][][][][][][][][][][]{};
+    }
 }

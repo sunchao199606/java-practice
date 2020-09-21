@@ -9,15 +9,6 @@ import org.junit.jupiter.api.Test;
  */
 public class StringTest {
 
-    StringTest() {
-        this("");
-        System.out.println();
-    }
-
-    StringTest(String string) {
-
-    }
-
     @Test
     public void add() {
 //        String a = "a";
@@ -27,5 +18,14 @@ public class StringTest {
         int i = 8;
         float f = 3.0f;
         System.out.println((int) (i / f));
+    }
+
+    @Test
+    public void test() {
+        String a = "孙超;;;;;;;;;;;;;;;jjjjjjj";
+        String b = "a";
+        System.out.println(a);
+        Class clazz = StringTest.class;
+        clazz.getEnclosingMethod();
     }
 }

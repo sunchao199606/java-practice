@@ -53,17 +53,17 @@ public class ProductInvocationHandler implements InvocationHandler {
 
     public static void main(String[] args) throws IOException {
         // 生成字节码
-        byte[] data = ProxyGenerator.generateProxyClass("cn.com.sunchao.reflection.dynamicProxy.jdk.ProductServiceImpl", ProductServiceImpl.class.getInterfaces());
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
-        File proxyClassFile = new File("D:\\Program\\workspace\\eclipse\\demo_workspace\\JavaDemo\\out\\production\\classes\\cn\\com\\sunchao\\reflection\\dynamicProxy\\ProductServiceImpl$Proxy.class");
-        if (!proxyClassFile.exists()) {
-            proxyClassFile.createNewFile();
-        }
-        FileOutputStream fileOutputStream = new FileOutputStream(proxyClassFile);
-        byte[] container = new byte[512];
-        while (byteArrayInputStream.read(container) != -1) {
-            fileOutputStream.write(container);
-        }
+//        byte[] data = ProxyGenerator.generateProxyClass("cn.com.sunchao.reflection.dynamicProxy.jdk.ProductServiceImpl", ProductServiceImpl.class.getInterfaces());
+//        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+//        File proxyClassFile = new File("D:\\Program\\workspace\\eclipse\\demo_workspace\\JavaDemo\\out\\production\\classes\\cn\\com\\sunchao\\reflection\\dynamicProxy\\ProductServiceImpl$Proxy.class");
+//        if (!proxyClassFile.exists()) {
+//            proxyClassFile.createNewFile();
+//        }
+//        FileOutputStream fileOutputStream = new FileOutputStream(proxyClassFile);
+//        byte[] container = new byte[512];
+//        while (byteArrayInputStream.read(container) != -1) {
+//            fileOutputStream.write(container);
+//        }
         ProductServiceImpl target = new ProductServiceImpl();
         ProductInvocationHandler handler = new ProductInvocationHandler(target);
         ProductService proxy = (ProductService) handler.getProxy();

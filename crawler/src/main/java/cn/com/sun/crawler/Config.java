@@ -34,15 +34,15 @@ public class Config {
 
     public static final String[] PORNY_PAGES = new String[]{
             //"https://91porny.com/",
-            "https://91porny.com/video/category/recent-favorite",
+//            "https://91porny.com/video/category/recent-favorite",
 //            "https://91porny.com/video/category/recent-favorite/2",
 //            "https://91porny.com/video/category/recent-favorite/3",
 //            "https://91porny.com/video/category/recent-favorite/4",
-            "https://91porny.com/video/category/hot-list",
-            "https://91porny.com/video/category/month-discuss",
-            "https://91porny.com/video/category/top-favorite",
-            "https://91porny.com/video/category/top-list",
-            "https://91porny.com/video/category/top-last"
+//            "https://91porny.com/video/category/hot-list",
+//            "https://91porny.com/video/category/month-discuss",
+//            "https://91porny.com/video/category/top-favorite",
+            "https://91porny.com/video/category/top-list/4",
+//            "https://91porny.com/video/category/top-last"
     };
 
     //public static final String[] PAGES = new String[] {"http://0728.91p50.com/v.php?category=tf&viewtype=basic&page=2","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=3","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=4","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=5"};

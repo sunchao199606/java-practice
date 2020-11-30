@@ -5,7 +5,9 @@ plugins {
 version 'unspecified'
 
 repositories {
-    mavenCentral()
+    mavenLocal()
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
 }
 
 dependencies {
@@ -19,4 +21,10 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     // https://mvnrepository.com/artifact/com.google.guava/guava
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
+
+    // https://mvnrepository.com/artifact/ws.schild/jave-core
+    compile group: 'ws.schild', name: 'jave-core', version: '3.0.0'
+    // https://mvnrepository.com/artifact/ws.schild/jave-native-win64
+    compile group: 'ws.schild', name: 'jave-nativebin-win32', version: '3.0.0'
+
 }

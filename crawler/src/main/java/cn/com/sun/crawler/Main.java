@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,10 +48,10 @@ public class Main {
     public static void main(String[] args) {
         FileAccessManager fileAccessManager = FileAccessManager.getInstance();
         IVideoCrawler<Video> crawler;
-        String[] pages = null;
+        List<String> pages = null;
         if (Config.SITE.equals("porn")) {
             crawler = new PornVideoCrawler(fileAccessManager);
-            pages = Config.PORN_PAGES;
+            pages = null;
             // 走代理
             Config.HTTP_PROXY_PORT = 1080;
         } else {

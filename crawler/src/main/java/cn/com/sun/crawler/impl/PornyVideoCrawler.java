@@ -72,10 +72,21 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
     @Override
     protected String getVideoDownloadUrl(Document document) {
         String downloadUrl = "";
-        Element source = document.select("#video-play").select("source").first();
-        if (source != null) {
-            downloadUrl = source.attr("src");
+        // 1 video标签获取
+        Element videoSource = document.select("#video-play").select("source").first();
+        if (videoSource != null) {
+            if (videoSource.attr("src").contains(".mp4")) {
+                downloadUrl = videoSource.attr("src");
+                return downloadUrl;
+            }
             //logger.info("get video {} download url by page：{}", video.getTitle(), downloadUrl);
+        }
+        // 2 下载链接获取
+        Element downloadDiv = document.select("#videoShowTabDownload").first();
+        if (downloadDiv != null && !downloadDiv.children().isEmpty()) {
+            Element link = downloadDiv.children().first();
+            if (link != null)
+                downloadUrl = link.attr("href");
         }
         return downloadUrl;
     }

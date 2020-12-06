@@ -22,7 +22,7 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
     }
 
     @Override
-    protected List<Video> getVideoBaseInfo(Document document) {
+    public List<Video> getVideoBaseInfo(Document document) {
         Elements elements = document.select(".colVideoList").select(".video-elem");
         List<Video> videoList = new ArrayList<>();
         for (Element content : elements) {

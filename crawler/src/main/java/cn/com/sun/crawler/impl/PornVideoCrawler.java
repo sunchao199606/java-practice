@@ -23,7 +23,7 @@ public class PornVideoCrawler extends AbstractVideoCrawler {
     }
 
     @Override
-    protected List<Video> getVideoBaseInfo(Document document) {
+    public List<Video> getVideoBaseInfo(Document document) {
         Elements elements = document.select(".well.well-sm");
         List<Video> videoList = new ArrayList<>();
         for (Element content : elements) {

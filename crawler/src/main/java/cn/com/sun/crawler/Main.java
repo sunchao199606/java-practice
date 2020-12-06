@@ -61,6 +61,12 @@ public class Main {
         Set<Video> videoSet = new LinkedHashSet<>();
         for (String pageUrl : pages) {
             logger.info("crawler parse page :{} start", pageUrl);
+//            String encodeUrl = "";
+//            try {
+//                encodeUrl = URLEncoder.encode(pageUrl, "UTF-8");
+//            } catch (UnsupportedEncodingException e) {
+//                logger.error(e.getMessage(), e);
+//            }
             videoSet.addAll(crawler.parseVideoBaseInfo(pageUrl));
             logger.info("crawler parse page :{} end", pageUrl);
         }

@@ -2,6 +2,8 @@ package cn.com.sun.crawler;
 
 import com.google.common.collect.Lists;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -22,6 +24,8 @@ public class Config {
      * 站点：91porn.com或者91porny.com
      */
     public static final String SITE = "porny";
+
+    public static final String EXT = ".mp4";
 
     public static final String CURRENT_HOT_1 = "https://91porny.com/video/category/hot-list/1";
     public static final String CURRENT_HOT_2 = "https://91porny.com/video/category/hot-list/2";
@@ -67,14 +71,30 @@ public class Config {
     };
     public static final String[] DAILY = new String[]{
             CURRENT_HOT_1,
-            RECENT_HIGHLIGHT_1,
-            MONTH_HOT,
-            MONTH_STORE,
-            MONTH_DISCUSS,
-            LAST_MONTH_HOT
+//            RECENT_HIGHLIGHT_1,
+//            MONTH_HOT,
+//            MONTH_STORE,
+//            MONTH_DISCUSS,
+//            LAST_MONTH_HOT
     };
+    public static String[] AUTHOR = null;
+    public static String authorName = "91太宰治";
 
-    public static final List<String> PORNY_PAGES = Lists.newArrayList(DAILY);
+    static {
+        try {
+            AUTHOR = new String[]{
+                    String.format("https://91porny.com/author?keywords=%s&page=1", URLEncoder.encode(authorName,"UTF-8")),
+                    String.format("https://91porny.com/author?keywords=%s&page=2", URLEncoder.encode(authorName,"UTF-8")),
+                    String.format("https://91porny.com/author?keywords=%s&page=3", URLEncoder.encode(authorName,"UTF-8")),
+                    String.format("https://91porny.com/author?keywords=%s&page=4", URLEncoder.encode(authorName,"UTF-8")),
+                    String.format("https://91porny.com/author?keywords=%s&page=5", URLEncoder.encode(authorName,"UTF-8")),
+            };
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static final List<String> PORNY_PAGES = Lists.newArrayList(AUTHOR);
 
     //public static final String[] PAGES = new String[] {"http://0728.91p50.com/v.php?category=tf&viewtype=basic&page=2","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=3","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=4","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=5"};
     public static final int CONNECT_TIMEOUT = 10000;

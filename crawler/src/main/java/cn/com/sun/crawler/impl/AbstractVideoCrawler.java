@@ -63,7 +63,7 @@ public abstract class AbstractVideoCrawler implements IVideoCrawler<Video> {
      * @param document
      * @return
      */
-    protected abstract List<Video> getVideoBaseInfo(Document document);
+    public abstract List<Video> getVideoBaseInfo(Document document);
 
     /**
      * 解析视频下载Url信息

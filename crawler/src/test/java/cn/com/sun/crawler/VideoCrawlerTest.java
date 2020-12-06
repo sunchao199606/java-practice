@@ -51,7 +51,7 @@ public class VideoCrawlerTest {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
              BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outFile))) {
             bufferedReader.lines().filter(line -> line.contains("playvthumb_")).filter(line -> line.contains("INFO"))
-                .map(p -> p.substring(p.indexOf("playvthumb"))).distinct().forEach(line -> {
+                    .map(p -> p.substring(p.indexOf("playvthumb"))).distinct().forEach(line -> {
                 try {
                     bufferedWriter.write(line);
                     bufferedWriter.newLine();
@@ -77,14 +77,14 @@ public class VideoCrawlerTest {
     }
 
     @Test
-    public void testDownLoad(){
+    public void testDownLoad() {
         Video video = new Video();
         video.setDownloadUrl("https://cfdc.91p52.com//mp43/394100.mp4?st=5-9M6SQwUZ9JSvW2zFRCBg");
         HttpClient.downloadVideoToFs(video);
     }
 
     @Test
-    public void testGetHtml(){
+    public void testGetHtml() {
         logger.info(HttpClient.getHtmlByHttpClient("http://91.9p9.xyz/ev.php?VID=48fdRwSk7y21zZjpdgisWqmrWFL2sFkNcE6n6SG8gZHE5PkG"));
     }
 
@@ -93,6 +93,21 @@ public class VideoCrawlerTest {
         Document document = Jsoup.parse(html);
         String title = document.selectFirst("#videodetails").selectFirst(".login_register_header").text();
         return title;
+    }
+
+    @Test
+    public void temp() {
+        File dir = new File("F:\\Download\\crawler\\author");
+        for (File file : dir.listFiles()) {
+            if (file.isFile()) {
+                File newFile = new File(file.getParentFile() + File.separator + file.getName().replace("pppooozxc;", ""));
+                file.renameTo(newFile);
+            }
+        }
+    }
+    @Test
+    public void urlEncode(){
+
     }
 }
 

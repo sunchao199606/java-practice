@@ -28,18 +28,20 @@ public class FileAccessManager {
     private static final Lock READ_LOCK = READ_WRITE_LOCK.readLock();
     private static final Lock WRITE_LOCK = READ_WRITE_LOCK.writeLock();
 
+    private File authorFile;
     private File downloadedFile;
 
     private static FileAccessManager instance;
 
-    private FileAccessManager(File file) {
-        this.downloadedFile = file;
+    private FileAccessManager(File dir) {
+        this.downloadedFile = new File(dir, "downloaded");
+        this.authorFile = new File(dir, "authorInfo");
     }
 
     public static FileAccessManager getInstance() {
         if (instance == null) {
-            File downloadedFile = new File(Config.DOWNLOADED_FILE_PATH);
-            instance = new FileAccessManager(downloadedFile);
+            File dir = new File(Config.FILE_SAVE_PATH);
+            instance = new FileAccessManager(dir);
         }
         return instance;
     }
@@ -104,5 +106,20 @@ public class FileAccessManager {
             return true;
         }
         return false;
+    }
+
+    public void writeAuthor(Video video) {
+        WRITE_LOCK.lock();
+        try {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(authorFile, true))) {
+                bw.write(String.format("%s|%s\n", video, video.getAuthor()));
+                bw.flush();
+                logger.info("write author file:{}", video.getAuthor());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        } finally {
+            WRITE_LOCK.unlock();
+        }
     }
 }

@@ -6,6 +6,7 @@ import cn.com.sun.crawler.util.FileAccessManager;
 import cn.com.sun.crawler.util.HttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +54,26 @@ public abstract class AbstractVideoCrawler implements IVideoCrawler<Video> {
             return false;
         }
         logger.info("get {} download url: {}", video.getTitle(), downloadUrl);
+        //获取作者
+        String author = getAuthor(document);
+        if (author.isEmpty()) {
+            logger.warn("get {} author failed", video.getTitle());
+        }
+        video.setAuthor(author);
         video.setDownloadUrl(downloadUrl);
         return true;
+    }
+
+    private String getAuthor(Document document) {
+        // 3 获取作者信息
+        Element infoDiv = document.select("#videoShowTabAbout").first();
+        if (infoDiv != null) {
+            Element author = infoDiv.selectFirst("a");
+            if (author != null) {
+                return author.ownText();
+            }
+        }
+        return "";
     }
 
     /**

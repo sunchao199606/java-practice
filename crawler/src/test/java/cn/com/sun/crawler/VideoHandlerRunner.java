@@ -21,7 +21,7 @@ import java.util.List;
  * @Date : 2020/12/5 18:35
  */
 public class VideoHandlerRunner {
-    private static String dir = "F:\\Download\\crawler\\2020-11-02";
+    private static String dir = "F:\\Download\\crawler\\2020-12-07\\";
     private VideoHandler handler;
 
     @BeforeEach
@@ -30,16 +30,16 @@ public class VideoHandlerRunner {
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {})
+    @ValueSource(strings = {""})
     public void testEncode(String name) {
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(202, 360));
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {"Abyss22b"})
+    @ValueSource(strings = {""})
     public void runStoreByAuthor(String authorName) {
-        handler.storeByAuthor(authorName);
+        handler.storeByAuthor(authorName, true);
     }
 
     private List<Video> getVideos(String url) {

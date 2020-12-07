@@ -55,7 +55,7 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
             video.setDuration(minutes * 60 + seconds);
             // title
             video.setTitle(second.text());
-//            // author
+            // author
 //            String ownText = content.ownText();
 //            String text = ownText.substring(ownText.lastIndexOf(" 前 ") + 3);
 //            video.setAuthor(text.split(" ")[0]);

@@ -25,87 +25,67 @@ public class Config {
      */
     public static final String SITE = "porny";
 
-    public static final String EXT = ".mp4";
-
-    public static final String CURRENT_HOT_1 = "https://91porny.com/video/category/hot-list/1";
-    public static final String CURRENT_HOT_2 = "https://91porny.com/video/category/hot-list/2";
-    public static final String CURRENT_HOT_3 = "https://91porny.com/video/category/hot-list/3";
-    public static final String RECENT_HIGHLIGHT_1 = "https://91porny.com/video/category/recent-favorite/1";
-    public static final String RECENT_HIGHLIGHT_2 = "https://91porny.com/video/category/recent-favorite/2";
-    public static final String MONTH_HOT = "https://91porny.com/video/category/top-list";
-    public static final String MONTH_STORE = "https://91porny.com/video/category/top-favorite";
-    public static final String MONTH_DISCUSS = "https://91porny.com/video/category/month-discuss";
-    public static final String LAST_MONTH_HOT = "https://91porny.com/video/category/top-last";
-
-
     public static final String[] PORN_PAGES = new String[]{
             //HOME_PAGE, TOP_HOT, TOP_STORE, HOT_CURRENT, TOP_HOT_LAST_MONTH
     };
-    public static final String[] ALL_LAST_MONTH_HOT = new String[]{
-            "https://91porny.com/video/category/top-last/1",
-            "https://91porny.com/video/category/top-last/2",
-            "https://91porny.com/video/category/top-last/3",
-            "https://91porny.com/video/category/top-last/4",
-            "https://91porny.com/video/category/top-last/5"
 
-    };
-    public static final String[] ALL_MONTH_HOT = new String[]{
-            "https://91porny.com/video/category/top-list/1",
-            "https://91porny.com/video/category/top-list/2",
-            "https://91porny.com/video/category/top-list/3",
-            "https://91porny.com/video/category/top-list/4",
-            "https://91porny.com/video/category/top-list/5",
-    };
+    public static final String EXT = ".mp4";
+    public static final String DOMAIN = "https://91porny.com";
+    public static final String HOT = "/video/category/hot-list";
+    public static final String RECENT_HIGHLIGHT = "/video/category/recent-favorite";
+    public static final String MONTH_HOT = "/video/category/top-list";
+    public static final String MONTH_STORE = "/video/category/top-favorite";
+    public static final String MONTH_DISCUSS = "/video/category/month-discuss";
+    public static final String LAST_MONTH_HOT = "/video/category/top-last";
 
-    public static final String[] TOP_TEN_MONTH_STORE = new String[]{
-            "https://91porny.com/video/category/top-favorite/1",
-            "https://91porny.com/video/category/top-favorite/2",
-            "https://91porny.com/video/category/top-favorite/3",
-            "https://91porny.com/video/category/top-favorite/4",
-            "https://91porny.com/video/category/top-favorite/5",
-            "https://91porny.com/video/category/top-favorite/6",
-            "https://91porny.com/video/category/top-favorite/7",
-            "https://91porny.com/video/category/top-favorite/8",
-            "https://91porny.com/video/category/top-favorite/9",
-            "https://91porny.com/video/category/top-favorite/10"
-    };
-    public static final String[] DAILY = new String[]{
-            CURRENT_HOT_1,
-//            RECENT_HIGHLIGHT_1,
-//            MONTH_HOT,
-//            MONTH_STORE,
-//            MONTH_DISCUSS,
-//            LAST_MONTH_HOT
-    };
-    public static String[] AUTHOR = null;
-    public static String authorName = "91太宰治";
+
+    public static String[] DAILY;
+    public static String[] ALL_LAST_MONTH_HOT = new String[5];
+    public static String[] ALL_MONTH_HOT = new String[5];
+    public static String[] TOP_TEN_MONTH_STORE = new String[10];
+    public static String[] AUTHOR = new String[10];
+    public static String authorName = "tfboss58";
 
     static {
-        try {
-            AUTHOR = new String[]{
-                    String.format("https://91porny.com/author?keywords=%s&page=1", URLEncoder.encode(authorName,"UTF-8")),
-                    String.format("https://91porny.com/author?keywords=%s&page=2", URLEncoder.encode(authorName,"UTF-8")),
-                    String.format("https://91porny.com/author?keywords=%s&page=3", URLEncoder.encode(authorName,"UTF-8")),
-                    String.format("https://91porny.com/author?keywords=%s&page=4", URLEncoder.encode(authorName,"UTF-8")),
-                    String.format("https://91porny.com/author?keywords=%s&page=5", URLEncoder.encode(authorName,"UTF-8")),
-            };
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        DAILY = new String[]{
+                DOMAIN + HOT,
+                DOMAIN + RECENT_HIGHLIGHT,
+                DOMAIN + MONTH_HOT,
+                DOMAIN + MONTH_STORE,
+                DOMAIN + MONTH_DISCUSS,
+                DOMAIN + LAST_MONTH_HOT
+        };
+        for (int i = 0; i < ALL_MONTH_HOT.length; i++) {
+            ALL_MONTH_HOT[i] = String.format("%s%s/%s", DOMAIN, MONTH_HOT, i + 1);
+        }
+        for (int i = 0; i < ALL_LAST_MONTH_HOT.length; i++) {
+            ALL_LAST_MONTH_HOT[i] = String.format("%s%s/%s", DOMAIN, LAST_MONTH_HOT, i + 1);
+        }
+        for (int i = 0; i < TOP_TEN_MONTH_STORE.length; i++) {
+            TOP_TEN_MONTH_STORE[i] = String.format("%s%s/%s", DOMAIN, MONTH_STORE, i + 1);
+        }
+        if (!authorName.isEmpty()) {
+            try {
+                for (int i = 0; i < AUTHOR.length; i++)
+                    AUTHOR[i] = String.format("%s/author?keywords=%s&page=%s", DOMAIN, URLEncoder.encode(authorName, "UTF-8"), i + 1);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static final List<String> PORNY_PAGES = Lists.newArrayList(AUTHOR);
+    public static List<String> PORNY_PAGES = Lists.newArrayList(AUTHOR);
 
-    //public static final String[] PAGES = new String[] {"http://0728.91p50.com/v.php?category=tf&viewtype=basic&page=2","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=3","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=4","http://www.91porn.com/v.php?category=top&m=-1&viewtype=basic&page=5"};
     public static final int CONNECT_TIMEOUT = 10000;
 
     public static final int READ_TIMEOUT = 5000;
 
     public static final int READ_FILE_TIMEOUT = 60000;
 
-    public static final String FILE_SAVE_PATH = "F://Download//crawler//";
+    public static String FILE_SAVE_PATH = "F://Download//crawler//";
 
-    public static final String DOWNLOADED_FILE_PATH = FILE_SAVE_PATH + "downloaded";
+    public static String AUTHOR_PATH = FILE_SAVE_PATH + "author//";
+
 
     /**
      * 请求失败重新尝试请求的次数

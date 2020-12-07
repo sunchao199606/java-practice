@@ -38,7 +38,7 @@ public class VideoCrawlerTest {
             String id = "playvthumb_" + downloadUrl.substring(downloadUrl.indexOf(".mp4") - 6, downloadUrl.indexOf(".mp4"));
             video.setId(id);
             if (!fileAccessManager.isDownloaded(video)) {
-                if (HttpClient.downloadVideoToFs(video)) fileAccessManager.write(video);
+                if (HttpClient.downloadVideoToFs(video, null)) fileAccessManager.write(video);
             }
         }
 
@@ -80,7 +80,7 @@ public class VideoCrawlerTest {
     public void testDownLoad() {
         Video video = new Video();
         video.setDownloadUrl("https://cfdc.91p52.com//mp43/394100.mp4?st=5-9M6SQwUZ9JSvW2zFRCBg");
-        HttpClient.downloadVideoToFs(video);
+        HttpClient.downloadVideoToFs(video, new File(Config.FILE_SAVE_PATH));
     }
 
     @Test
@@ -105,8 +105,9 @@ public class VideoCrawlerTest {
             }
         }
     }
+
     @Test
-    public void urlEncode(){
+    public void urlEncode() {
 
     }
 }

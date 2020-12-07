@@ -116,19 +116,16 @@ public class HttpClient {
      * @param video
      * @return
      */
-    public static boolean downloadVideoToFs(Video video) {
+    public static boolean downloadVideoToFs(Video video, File dir) {
         // 请求
         HttpGet request = createHttpGetRequest(video.getDownloadUrl());
         request.setConfig(RequestConfig.copy(requestConfig).setSocketTimeout(Config.READ_FILE_TIMEOUT).build());
-        // 创建对应日期的文件夹
-        String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-        File dir = new File(Config.FILE_SAVE_PATH + date);
         if (!dir.exists()) {
             dir.mkdir();
         }
         // 下载
         String fileName = filterBannedChar(video.getTitle());
-        String filePath = dir.getPath() + File.separator + fileName + ".mp4";
+        String filePath = dir.getPath() + File.separator + fileName + Config.EXT;
         File file = new File(filePath);
         LocalTime startTime;
         try {

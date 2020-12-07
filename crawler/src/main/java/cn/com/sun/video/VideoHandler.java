@@ -65,7 +65,7 @@ public class VideoHandler {
         }
     }
 
-    public void storeByAuthor(String authorName) {
+    public void storeByAuthor(String authorName, boolean move) {
         // 1 获取作者全部视频
         List<Video> authorAllVideoList = getAllVideoByAuthor(authorName);
         // 2 获取已下载视频
@@ -107,19 +107,24 @@ public class VideoHandler {
             }
         });
         // 3 移动视频
-//        notDownloadList.forEach(name -> logger.warn("not download file : {}", name));
-//        repeatList.forEach(name -> logger.warn("repeat file : {}", name));
-        File destDir = new File("F:\\Download\\crawler\\author\\" + authorName);
-        selectedFileList.forEach(file -> {
-            logger.info("moving file : {}", file.getName());
-            File dest = new File(destDir.getAbsolutePath() + File.separator + file.getName());
-            if (dest.exists()) {
-                logger.info("has store file : {}", dest.getPath());
-                return;
-            }
-            IOUtil.move(file, dest);
-            System.out.println(file.getName());
-        });
+        if (move) {
+            File destDir = new File("F:\\Download\\crawler\\author\\" + authorName);
+            selectedFileList.forEach(file -> {
+                logger.info("moving file : {}", file.getName());
+                File dest = new File(destDir.getAbsolutePath() + File.separator + file.getName());
+                if (dest.exists()) {
+                    logger.info("has store file : {}", dest.getPath());
+                    return;
+                }
+                IOUtil.move(file, dest);
+                System.out.println(file.getName());
+            });
+        } else {
+            notDownloadList.forEach(name -> logger.warn("not download file : {}", name));
+            repeatList.forEach(name -> logger.warn("repeat file : {}", name));
+            selectedFileList.forEach(file -> logger.info("selected file : {}",file.getAbsolutePath()));
+        }
+
     }
 
 

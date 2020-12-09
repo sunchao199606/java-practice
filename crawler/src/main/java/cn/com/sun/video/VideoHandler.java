@@ -19,6 +19,7 @@ import ws.schild.jave.encode.AudioAttributes;
 import ws.schild.jave.encode.EncodingAttributes;
 import ws.schild.jave.encode.VideoAttributes;
 import ws.schild.jave.info.MultimediaInfo;
+import ws.schild.jave.info.VideoInfo;
 import ws.schild.jave.info.VideoSize;
 
 import java.io.File;
@@ -122,35 +123,60 @@ public class VideoHandler {
         } else {
             notDownloadList.forEach(name -> logger.warn("not download file : {}", name));
             repeatList.forEach(name -> logger.warn("repeat file : {}", name));
-            selectedFileList.forEach(file -> logger.info("selected file : {}",file.getAbsolutePath()));
+            selectedFileList.forEach(file -> logger.info("selected file : {}", file.getAbsolutePath()));
         }
 
     }
 
+    public static void encode(File source) {
+        encode(source, null, 800 * 1024);
+    }
+
+    public static void encode(File source, VideoSize size) {
+        encode(source, size, 800 * 1024);
+    }
 
     /**
      * 视频编码
      */
-    public static void encode(File source, VideoSize size) {
+    public static void encode(File source, VideoSize size, Integer bitRate) {
         String tempPath = source.getParent() + "\\" + source.getName().replace(".mp4", "");
         File temp = new File(tempPath);
         MultimediaObject object = new MultimediaObject(source);
 
         AudioAttributes audio = new AudioAttributes();
         VideoAttributes video = new VideoAttributes();
-        video.setSize(size);
+        if (size != null) video.setSize(size);
+        if (bitRate != null) video.setBitRate(bitRate);
         EncodingAttributes attrs = new EncodingAttributes();
-        //attrs.setEncodingThreads()
+        attrs.setEncodingThreads(4);
         attrs.setOutputFormat("mp4");
         attrs.setVideoAttributes(video);
         attrs.setAudioAttributes(audio);
         Encoder encoder = new Encoder();
+        VideoInfo originVideoInfo = null;
+        MultimediaInfo originMultimediaInfo = null;
+        MultimediaInfo newMultimediaInfo = null;
+        VideoInfo newVideoInfo = null;
         try {
+            originMultimediaInfo = object.getInfo();
+            originVideoInfo = originMultimediaInfo.getVideo();
             encoder.encode(object, temp, attrs);
+            MultimediaObject newObj = new MultimediaObject(temp);
+            newMultimediaInfo = newObj.getInfo();
+            newVideoInfo = newMultimediaInfo.getVideo();
         } catch (EncoderException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } finally {
+            logger.info("before encode width:{} height:{} bitRate:{} frameRate:{} duration:{}s",
+                    originVideoInfo.getSize().getWidth(), originVideoInfo.getSize().getHeight(),
+                    originVideoInfo.getBitRate(), originVideoInfo.getFrameRate(), originMultimediaInfo.getDuration() / 1000);
+            logger.info("after encode width:{} height:{} bitRate:{} frameRate:{} duration:{}s",
+                    newVideoInfo.getSize().getWidth(), newVideoInfo.getSize().getHeight(), newVideoInfo.getBitRate(),
+                    newVideoInfo.getFrameRate(), newMultimediaInfo.getDuration() / 1000);
         }
         File target = new File(tempPath + ".mp4");
+
         if (source.delete())
             temp.renameTo(target);
         else

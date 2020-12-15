@@ -8,8 +8,12 @@ import cn.com.sun.video.VideoHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import ws.schild.jave.EncoderException;
+import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.info.MultimediaInfo;
 import ws.schild.jave.info.VideoSize;
 
 import java.io.File;
@@ -21,7 +25,8 @@ import java.util.List;
  * @Date : 2020/12/5 18:35
  */
 public class VideoHandlerRunner {
-    private static String dir = "F:\\Download\\crawler\\2020-12-09\\";
+    private static String dir = "F:\\Download\\crawler\\2020-11\\2020-11-02";
+
     private VideoHandler handler;
 
     @BeforeEach
@@ -30,17 +35,47 @@ public class VideoHandlerRunner {
     }
 
     @ParameterizedTest()
+    @ValueSource(strings = {
+            ".mp4"})
+    public void encodeTo640(String name) {
+        String dir = "F:\\Download\\crawler\\2020-10\\2020-10-27";
+        File file = new File(dir + "\\" + name);
+        VideoHandler.encode(file, new VideoSize(640, 360));
+    }
+
+
+    @ParameterizedTest()
     @ValueSource(strings = {".mp4"})
-    public void encode(String name) {
+    public void encodeTo202(String name) {
+        String dir = "F:\\Download\\crawler\\2020-10\\2020-10-22";
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(202, 360));
-        //VideoHandler.encode(file, new VideoSize(360, 360));
-        //VideoHandler.encode(file, new VideoSize(648, 368));
-        //VideoHandler.encode(file);
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {"伊纯由眞"})
+    @ValueSource(strings = {".mp4"})
+    public void encodeTo360(String name) {
+        String dir = "F:\\Download\\crawler\\2020-10\\2020-10-29";
+        File file = new File(dir + "\\" + name);
+        VideoHandler.encode(file, new VideoSize(360, 360));
+    }
+
+    @Test
+    public void encodeToNhd() throws EncoderException {
+        String dir = "F:\\Download\\crawler\\2020-10";
+        for (File file : new File(dir).listFiles()) {
+            for (File f : new File(file.getPath()).listFiles()) {
+                MultimediaInfo info = new MultimediaObject(f).getInfo();
+                if (info.getVideo().getSize().asEncoderArgument().
+                        equals(new VideoSize(540, 360).asEncoderArgument())) {
+                    VideoHandler.encode(f, VideoSize.nhd);
+                }
+            }
+        }
+    }
+
+    @ParameterizedTest()
+    @ValueSource(strings = {"Abyss22b"})
     public void runStoreByAuthor(String authorName) {
         handler.storeByAuthor(authorName, false);
     }

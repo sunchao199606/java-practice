@@ -44,7 +44,7 @@ public class Config {
     public static String[] ALL_MONTH_HOT = new String[5];
     public static String[] TOP_TEN_MONTH_STORE = new String[10];
     public static String[] AUTHOR = new String[10];
-    public static String authorName = "tfboss58";
+    public static String authorName = "Abyss22b";
 
     static {
         DAILY = new String[]{
@@ -74,7 +74,7 @@ public class Config {
         }
     }
 
-    public static List<String> PORNY_PAGES = Lists.newArrayList(AUTHOR);
+    public static List<String> PORNY_PAGES = Lists.newArrayList(DAILY);
 
     public static final int CONNECT_TIMEOUT = 10000;
 

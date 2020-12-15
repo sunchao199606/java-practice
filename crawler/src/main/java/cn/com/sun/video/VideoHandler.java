@@ -133,7 +133,7 @@ public class VideoHandler {
     }
 
     public static void encode(File source, VideoSize size) {
-        encode(source, size, 800 * 1024);
+        encode(source, size, 600 * 1024);
     }
 
     /**

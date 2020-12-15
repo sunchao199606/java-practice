@@ -100,4 +100,11 @@ public class MainTest {
         System.out.println(XMLEntityManager.expandSystemId("E:\\工作文件\\A徽商银行\\abc/resourceFolder/pdf/fop.xconf", null, false));
     }
 
+
+    @Test
+    public void testFloat() {
+        float r = 7 / (float) 20;
+        System.out.println(r);
+    }
+
 }

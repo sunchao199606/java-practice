@@ -129,7 +129,7 @@ public class VideoHandler {
     }
 
     public static void encode(File source) {
-        encode(source, null, 800 * 1024);
+        encode(source, null, 600 * 1024);
     }
 
     public static void encode(File source, VideoSize size) {
@@ -237,12 +237,22 @@ public class VideoHandler {
 //        });
     }
 
-    private static void listFiles(File dir, Consumer<File> fileConsumer) {
+    public static void listFiles(File dir, Consumer<File> fileConsumer) {
         for (File f : dir.listFiles()) {
             if (f.isFile()) {
                 fileConsumer.accept(f);
             } else {
                 listFiles(f, fileConsumer);
+            }
+        }
+    }
+
+    public static void listFiles(File dir, List<File> fileList) {
+        for (File f : dir.listFiles()) {
+            if (f.isFile()) {
+                fileList.add(f);
+            } else {
+                listFiles(f, fileList);
             }
         }
     }

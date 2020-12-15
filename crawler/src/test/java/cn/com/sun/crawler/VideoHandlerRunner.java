@@ -8,8 +8,8 @@ import cn.com.sun.video.VideoHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import ws.schild.jave.EncoderException;
 import ws.schild.jave.MultimediaObject;
@@ -17,7 +17,9 @@ import ws.schild.jave.info.MultimediaInfo;
 import ws.schild.jave.info.VideoSize;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @Description :
@@ -60,17 +62,13 @@ public class VideoHandlerRunner {
         VideoHandler.encode(file, new VideoSize(360, 360));
     }
 
-    @Test
-    public void encodeToNhd() throws EncoderException {
-        String dir = "F:\\Download\\crawler\\2020-10";
-        for (File file : new File(dir).listFiles()) {
-            for (File f : new File(file.getPath()).listFiles()) {
-                MultimediaInfo info = new MultimediaObject(f).getInfo();
-                if (info.getVideo().getSize().asEncoderArgument().
-                        equals(new VideoSize(540, 360).asEncoderArgument())) {
-                    VideoHandler.encode(f, VideoSize.nhd);
-                }
-            }
+    @ParameterizedTest()
+    @MethodSource("fileGenerator")
+    public void encodeToNhd(File f) throws EncoderException {
+        MultimediaInfo info = new MultimediaObject(f).getInfo();
+        if (info.getVideo().getSize().asEncoderArgument().
+                equals(new VideoSize(540, 360).asEncoderArgument())) {
+            VideoHandler.encode(f, VideoSize.nhd);
         }
     }
 
@@ -85,5 +83,12 @@ public class VideoHandlerRunner {
         AbstractVideoCrawler crawler = new PornyVideoCrawler(null);
         Document document = Jsoup.parse(htmlString);
         return crawler.getVideoBaseInfo(document);
+    }
+
+    public static Stream<File> fileGenerator() {
+        String dir = "F:\\Download\\crawler\\2020-10";
+        List<File> fileList = new ArrayList<>();
+        VideoHandler.listFiles(new File(dir), fileList);
+        return fileList.stream();
     }
 }

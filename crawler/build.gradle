@@ -25,6 +25,6 @@ dependencies {
     // https://mvnrepository.com/artifact/ws.schild/jave-core
     compile group: 'ws.schild', name: 'jave-core', version: '3.0.0'
     // https://mvnrepository.com/artifact/ws.schild/jave-native-win64
-    compile group: 'ws.schild', name: 'jave-nativebin-win32', version: '3.0.0'
+    compile group: 'ws.schild', name: 'jave-nativebin-win64', version: '3.0.0'
 
 }

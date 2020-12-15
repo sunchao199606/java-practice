@@ -4,7 +4,6 @@ import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.impl.AbstractVideoCrawler;
 import cn.com.sun.crawler.impl.PornyVideoCrawler;
 import cn.com.sun.crawler.util.HttpClient;
-import cn.com.sun.video.VideoHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,7 @@ import java.util.stream.Stream;
  * @Date : 2020/12/5 18:35
  */
 public class VideoHandlerRunner {
-    private static String dir = "F:\\Download\\crawler\\2020-11\\2020-11-02";
+    private static String dir = "F:\\Download\\crawler\\2020-10\\2020-10-11";
 
     private VideoHandler handler;
 
@@ -37,19 +36,8 @@ public class VideoHandlerRunner {
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {
-            ".mp4"})
-    public void encodeTo640(String name) {
-        String dir = "F:\\Download\\crawler\\2020-10\\2020-10-27";
-        File file = new File(dir + "\\" + name);
-        VideoHandler.encode(file, new VideoSize(640, 360));
-    }
-
-
-    @ParameterizedTest()
-    @ValueSource(strings = {".mp4"})
+    @ValueSource(strings = {".mp4", ".mp4"})
     public void encodeTo202(String name) {
-        String dir = "F:\\Download\\crawler\\2020-10\\2020-10-22";
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(202, 360));
     }
@@ -57,9 +45,29 @@ public class VideoHandlerRunner {
     @ParameterizedTest()
     @ValueSource(strings = {".mp4"})
     public void encodeTo360(String name) {
-        String dir = "F:\\Download\\crawler\\2020-10\\2020-10-29";
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(360, 360));
+    }
+
+    @ParameterizedTest()
+    @ValueSource(strings = {".mp4"})
+    public void encodeTo480(String name) {
+        File file = new File(dir + "\\" + name);
+        VideoHandler.encode(file, new VideoSize(480, 360));
+    }
+
+    @ParameterizedTest()
+    @ValueSource(strings = {".mp4"})
+    public void encodeTo540(String name) {
+        File file = new File(dir + "\\" + name);
+        VideoHandler.encode(file, new VideoSize(540, 360));
+    }
+
+    @ParameterizedTest()
+    @ValueSource(strings = {".mp4"})
+    public void encodeTo640(String name) {
+        File file = new File(dir + "\\" + name);
+        VideoHandler.encode(file, new VideoSize(640, 360));
     }
 
     @ParameterizedTest()
@@ -86,7 +94,7 @@ public class VideoHandlerRunner {
     }
 
     public static Stream<File> fileGenerator() {
-        String dir = "F:\\Download\\crawler\\2020-10";
+        String dir = "F:\\Download\\crawler\\2020-09";
         List<File> fileList = new ArrayList<>();
         VideoHandler.listFiles(new File(dir), fileList);
         return fileList.stream();

@@ -21,9 +21,10 @@
             <pattern>%date{HH:mm:ss.SSS} %-5level[%thread] %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
-
+    <logger name="cn.com.sun.crawler" level="info">
+        <appender-ref ref="FILE"/>
+    </logger>
     <root level="debug">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
     </root>
 </configuration>

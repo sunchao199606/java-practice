@@ -1,6 +1,5 @@
-package cn.com.sun.video;
+package cn.com.sun.crawler;
 
-import cn.com.sun.crawler.Config;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.impl.AbstractVideoCrawler;
 import cn.com.sun.crawler.impl.PornyVideoCrawler;
@@ -140,6 +139,7 @@ public class VideoHandler {
      * 视频编码
      */
     public static void encode(File source, VideoSize size, Integer bitRate) {
+        logger.info("encode file : {}", source.getPath());
         String tempPath = source.getParent() + "\\" + source.getName().replace(".mp4", "");
         File temp = new File(tempPath);
         MultimediaObject object = new MultimediaObject(source);

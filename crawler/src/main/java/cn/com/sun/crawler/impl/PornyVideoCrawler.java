@@ -27,8 +27,9 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
         List<Video> videoList = new ArrayList<>();
         for (Element content : elements) {
             Video video = new Video();
-            Element first = content.select("a").first();
-            Element second = content.select("a").last();
+            Element first = content.select("a").select(".display").first();
+            Element second = content.select("a").select(".title").first();
+            Element third = content.select("a").select(".text-dark").first();
             // id
             String style = first.select(".img").first().attr("style");
             int start = style.lastIndexOf("_");
@@ -42,12 +43,12 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
             }
             video.setId(id);
             // pageUrl
-            String pageUrl = URL_PREFIX + second.attr("href");
+            String pageUrl = URL_PREFIX + first.attr("href");
             video.setPageUrl(pageUrl);
             // coverUrl
             // video.setCoverUrl(a.select("img").first().attr("src"));
             // duration
-            Element duration = content.select(".layer").first();
+            Element duration = first.select(".layer").first();
             String durationStr = duration.text().trim();
             int minutes = Integer.parseInt(durationStr.split(":")[0]);
             int seconds = Integer.parseInt(durationStr.split(":")[1]);
@@ -56,9 +57,7 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
             // title
             video.setTitle(second.text());
             // author
-//            String ownText = content.ownText();
-//            String text = ownText.substring(ownText.lastIndexOf(" 前 ") + 3);
-//            video.setAuthor(text.split(" ")[0]);
+            video.setAuthor(third.text());
 //            // watchNum
 //            video.setWatchNum(Integer.parseInt(text.split(" ")[1].trim()));
 //            // storeNum

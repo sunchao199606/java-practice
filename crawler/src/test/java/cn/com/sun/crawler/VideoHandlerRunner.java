@@ -26,13 +26,20 @@ import java.util.stream.Stream;
  * @Date : 2020/12/5 18:35
  */
 public class VideoHandlerRunner {
-    private static String dir = "F:\\Download\\crawler\\2020-10\\2020-10-11";
+    private static String dir = "F:\\Download\\crawler\\2020-12-26";
 
     private VideoHandler handler;
 
     @BeforeEach
     public void init() {
         handler = new VideoHandler();
+    }
+
+    @ParameterizedTest()
+    @ValueSource(strings = {""})
+    public void m3u8(String url) {
+        File workspace = new File("F:\\Download\\crawler\\workspace");
+        handler.downloadFromM3U8(url, workspace);
     }
 
     @ParameterizedTest()

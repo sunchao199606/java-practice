@@ -3,6 +3,7 @@ package cn.com.sun.crawler;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.impl.AbstractVideoCrawler;
 import cn.com.sun.crawler.impl.PornyVideoCrawler;
+import cn.com.sun.crawler.m3u8.M3U8;
 import cn.com.sun.crawler.util.FileAccessManager;
 import cn.com.sun.crawler.util.HttpClient;
 import cn.com.sun.crawler.util.IOUtil;
@@ -21,10 +22,12 @@ import ws.schild.jave.info.MultimediaInfo;
 import ws.schild.jave.info.VideoInfo;
 import ws.schild.jave.info.VideoSize;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -297,5 +300,174 @@ public class VideoHandler {
         };
         listFiles(new File(Config.FILE_SAVE_PATH), fileConsumer);
         return videoMap;
+    }
+
+    public void downloadFromM3U8(String m3u8Url, File workspace) {
+        if (!workspace.exists()) {
+            workspace.mkdirs();
+        }
+        M3U8 m3u8 = getM3U8ByUrl(m3u8Url);
+        File tempDir = new File(workspace.getPath() + "//" + m3u8.getId());
+        if (!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
+        String basePath = m3u8.getBasePath();
+        CountDownLatch countDownLatch = new CountDownLatch(m3u8.getTsList().size());
+        m3u8.getTsList().stream().parallel().forEach(m3U8Ts -> {
+            File file = new File(tempDir + File.separator + m3U8Ts.getFile());
+            if (!file.exists()) {
+                try {
+                    URL url = new URL(basePath + m3U8Ts.getFile());
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(60 * 1000);
+                    conn.setReadTimeout(60 * 1000);
+                    if (conn.getResponseCode() == 200) {
+                        try (InputStream inputStream = conn.getInputStream();
+                             FileOutputStream fos = new FileOutputStream(file)) {
+                            int len = 0;
+                            byte[] buf = new byte[4096];
+                            while ((len = inputStream.read(buf)) != -1) {
+                                fos.write(buf, 0, len);// 写入流中
+                            }
+                            fos.flush();
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+                logger.info("{} download success", file.getName());
+                countDownLatch.countDown();
+            }
+        });
+        try {
+            countDownLatch.await();
+            logger.info("all ts file download success");
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+        }
+        // ffmpeg工具合并视频片段
+        File outputFile = new File(workspace + "\\" + m3u8.getId() + ".mp4");
+        mergeVideo(tempDir, outputFile);
+        // 删除
+        for (File file : tempDir.listFiles()) file.delete();
+        tempDir.delete();
+    }
+
+    private M3U8 getM3U8ByUrl(String m3u8Url) {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(m3u8Url).openConnection();
+            if (conn.getResponseCode() == 200) {
+                String realUrl = conn.getURL().toString();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String basePath = realUrl.substring(0, realUrl.lastIndexOf(".m3u8?") - 6);
+                M3U8 m3U8 = new M3U8();
+                m3U8.setBasePath(basePath);
+                m3U8.setId(basePath.substring(basePath.length() - 7, basePath.length() - 1));
+                String line;
+                float seconds = 0;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("#")) {
+                        if (line.startsWith("#EXTINF:")) {
+                            int start = line.indexOf(":");
+                            line = line.substring(start + 1, line.length() - 1);
+                            try {
+                                seconds = Float.parseFloat(line);
+                            } catch (Exception e) {
+                                seconds = 0;
+                            }
+                        }
+                        continue;
+                    }
+                    if (line.endsWith("m3u8")) {
+                        return getM3U8ByUrl(basePath + line);
+                    }
+                    m3U8.addTs(new M3U8.Ts(line, seconds));
+                    seconds = 0;
+                }
+                reader.close();
+                return m3U8;
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private int file2Num(File file) {
+        String name = file.getName();
+        int num = Integer.parseInt(name.substring(6, name.lastIndexOf(".")));
+        return num;
+    }
+
+    private void mergeVideo(File tempDir, File outputFile) {
+        File[] files = tempDir.listFiles();
+        Arrays.sort(files, (f1, f2) -> {
+            int num1 = file2Num(f1);
+            int num2 = file2Num(f2);
+            return Integer.compare(num1, num2);
+        });
+        if (files.length > 1) {
+            String ffmpegPath = "D:\\Program\\tools\\ffmpeg\\bin\\ffmpeg.exe";// 此处是配置地址，可自行写死如“”
+            String outputPath = outputFile.getPath();
+            String txtPath = tempDir.getPath() + "\\fileList.txt";
+            try (FileOutputStream fos = new FileOutputStream(new File(txtPath))) {
+                for (File file : files) {
+                    fos.write(("file '" + file.getPath() + "'\r\n").getBytes());
+                }
+                fos.flush();
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            StringBuffer command = new StringBuffer("");
+            command.append(ffmpegPath);
+            command.append(" -f");
+            command.append(" concat");
+            command.append(" -safe");
+            command.append(" 0");
+            command.append(" -i ");
+            command.append(txtPath);
+            command.append(" -c");
+            command.append(" copy ");// -c copy 避免解码，提高处理速度
+            command.append(outputPath);
+            exeCommand(command.toString());
+        }
+
+    }
+
+    private void exeCommand(String command) {
+        Process process = null;
+        logger.info("start run cmd {}", command);
+        try {
+            process = Runtime.getRuntime().exec(command);
+            //此处代码是因为如果合并大视频文件会产生大量的日志缓存导致线程阻塞，最终合并失败，所以加两个线程处理日志的缓存，之后再调用waitFor方法，等待执行结果。
+            Process finalProcess = process;
+            new Thread(() -> {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
+                    String line = null;
+                    while ((line = in.readLine()) != null) {
+                        System.out.println("output:" + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            new Thread(() -> {
+                try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
+                    String line = null;
+                    while ((line = err.readLine()) != null) {
+                        logger.debug("err:" + line);
+                    }
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }).start();
+            // 等待命令子线程执行完成
+            finalProcess.waitFor();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            process.destroy();
+        }
     }
 }

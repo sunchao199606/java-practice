@@ -1,7 +1,7 @@
 package cn.com.sun.crawler.util;
 
-import cn.com.sun.crawler.Config;
 import cn.com.sun.crawler.entity.Video;
+import cn.com.sun.crawler.config.CrawlerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class FileAccessManager {
 
     public static FileAccessManager getInstance() {
         if (instance == null) {
-            File dir = new File(Config.FILE_SAVE_PATH);
+            File dir = new File(CrawlerConfig.FILE_SAVE_PATH);
             instance = new FileAccessManager(dir);
         }
         return instance;

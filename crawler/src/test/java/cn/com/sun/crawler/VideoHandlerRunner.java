@@ -1,9 +1,10 @@
 package cn.com.sun.crawler;
 
 import cn.com.sun.crawler.entity.Video;
-import cn.com.sun.crawler.impl.AbstractVideoCrawler;
-import cn.com.sun.crawler.impl.PornyVideoCrawler;
+import cn.com.sun.crawler.AbstractVideoCrawler;
+import cn.com.sun.crawler.impl.PornyCrawler;
 import cn.com.sun.crawler.util.HttpClient;
+import cn.com.sun.crawler.util.VideoHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
  * @Date : 2020/12/5 18:35
  */
 public class VideoHandlerRunner {
-    private static String dir = "F:\\Download\\crawler\\2020-12-26";
+    private static String dir = "F:\\Download\\crawler\\2020-12-30";
 
     private VideoHandler handler;
 
@@ -39,11 +40,11 @@ public class VideoHandlerRunner {
     @ValueSource(strings = {""})
     public void m3u8(String url) {
         File workspace = new File("F:\\Download\\crawler\\workspace");
-        handler.downloadFromM3U8(url, workspace);
+        //handler.downloadFromM3U8(url, workspace);
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {".mp4", ".mp4"})
+    @ValueSource(strings = {".mp4"})
     public void encodeTo202(String name) {
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(202, 360));
@@ -53,11 +54,11 @@ public class VideoHandlerRunner {
     @ValueSource(strings = {".mp4"})
     public void encodeTo360(String name) {
         File file = new File(dir + "\\" + name);
-        VideoHandler.encode(file, new VideoSize(360, 360));
+        VideoHandler.encode(file, new VideoSize(400, 360));
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {".mp4"})
+    @ValueSource(strings = {".mp4",".mp4"})
     public void encodeTo480(String name) {
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(480, 360));
@@ -95,7 +96,7 @@ public class VideoHandlerRunner {
 
     private List<Video> getVideos(String url) {
         String htmlString = HttpClient.getHtmlByHttpClient(url);
-        AbstractVideoCrawler crawler = new PornyVideoCrawler(null);
+        AbstractVideoCrawler crawler = new PornyCrawler();
         Document document = Jsoup.parse(htmlString);
         return crawler.getVideoBaseInfo(document);
     }

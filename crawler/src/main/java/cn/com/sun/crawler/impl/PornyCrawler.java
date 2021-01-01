@@ -1,25 +1,24 @@
 package cn.com.sun.crawler.impl;
 
+import cn.com.sun.crawler.AbstractVideoCrawler;
+import cn.com.sun.crawler.VideoCrawler;
+import cn.com.sun.crawler.config.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
-import cn.com.sun.crawler.util.FileAccessManager;
+import cn.com.sun.crawler.util.HttpClient;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-/**
- * @Description : 91porny.com网站视频爬虫
- * @Author : mockingbird
- * @Date : 2020/9/6 14:02
- */
-public class PornyVideoCrawler extends AbstractVideoCrawler {
+public class PornyCrawler extends AbstractVideoCrawler {
+    private static final Logger logger = LoggerFactory.getLogger(PornyCrawler.class);
     private static final String URL_PREFIX = "https://91porny.com";
-
-    public PornyVideoCrawler(FileAccessManager fileAccessManager) {
-        super(fileAccessManager);
-    }
 
     @Override
     public List<Video> getVideoBaseInfo(Document document) {
@@ -64,12 +63,34 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
 //            video.setStoreNum(Integer.parseInt(text.split(" ")[2].trim()));
             videoList.add(video);
         }
-
         return videoList;
     }
 
     @Override
-    protected String getVideoDownloadUrl(Document document) {
+    public VideoCrawler parseDownloadInfo() {
+        for (Video video : videoList) {
+            if (!parseVideoDownloadInfo(video)) {
+                logger.warn("get {} download url failed", video.getTitle());
+                continue;
+            }
+            logger.info("get {} download url: {}", video.getTitle(), video.getDownloadUrl());
+            downloadList.add(video);
+        }
+        return this;
+    }
+
+    private boolean parseVideoDownloadInfo(Video video) {
+        String htmlString = HttpClient.getHtmlByHttpClient(video.getPageUrl());
+        Document document = Jsoup.parse(htmlString);
+        String downloadUrl = getDownloadUrl(document);
+        if ("".equals(downloadUrl)) {
+            return false;
+        }
+        video.setDownloadUrl(downloadUrl);
+        return true;
+    }
+
+    private String getDownloadUrl(Document document) {
         String downloadUrl = "";
         // 1 video标签获取
         Element videoSource = document.select("#video-play").select("source").first();
@@ -88,5 +109,10 @@ public class PornyVideoCrawler extends AbstractVideoCrawler {
                 downloadUrl = link.attr("href");
         }
         return downloadUrl;
+    }
+
+    @Override
+    protected Callable<Boolean> createDownloadTask(Video video) {
+        return () -> HttpClient.downloadVideoToFs(video, CrawlerConfig.workspace);
     }
 }

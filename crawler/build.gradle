@@ -26,5 +26,7 @@ dependencies {
     compile group: 'ws.schild', name: 'jave-core', version: '3.0.0'
     // https://mvnrepository.com/artifact/ws.schild/jave-native-win64
     compile group: 'ws.schild', name: 'jave-nativebin-win64', version: '3.0.0'
+    // jcef
+    compile fileTree(dir: 'libs', includes: ['*jar'])
 
 }

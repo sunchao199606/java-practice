@@ -1,12 +1,10 @@
-package cn.com.sun.crawler;
+package cn.com.sun.crawler.util;
 
+import cn.com.sun.crawler.AbstractVideoCrawler;
+import cn.com.sun.crawler.config.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
-import cn.com.sun.crawler.impl.AbstractVideoCrawler;
-import cn.com.sun.crawler.impl.PornyVideoCrawler;
+import cn.com.sun.crawler.impl.PornyCrawler;
 import cn.com.sun.crawler.m3u8.M3U8;
-import cn.com.sun.crawler.util.FileAccessManager;
-import cn.com.sun.crawler.util.HttpClient;
-import cn.com.sun.crawler.util.IOUtil;
 import com.google.common.collect.Lists;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -76,7 +74,7 @@ public class VideoHandler {
         List<String> repeatList = new ArrayList<>();
         List<String> notDownloadList = new ArrayList<>();
         authorAllVideoList.forEach(video -> {
-            String videoName = video.getTitle() + Config.EXT;
+            String videoName = video.getTitle() + CrawlerConfig.EXT;
             if (downloadedMap.keySet().contains(videoName)) {
                 List<File> list = downloadedMap.get(videoName);
                 if (list.size() == 1) {
@@ -89,7 +87,7 @@ public class VideoHandler {
             } else {
                 if (recordMap.keySet().contains(video.getId())) {
                     String info = recordMap.get(video.getId());
-                    String originName = info.substring(info.indexOf("|") + 1) + Config.EXT;
+                    String originName = info.substring(info.indexOf("|") + 1) + CrawlerConfig.EXT;
                     List<File> list = downloadedMap.get(originName);
                     if (list == null) {
                         logger.error("not exist file: {}", originName);
@@ -262,7 +260,7 @@ public class VideoHandler {
 
     private List<Video> getVideos(String url) {
         String htmlString = HttpClient.getHtmlByHttpClient(url);
-        AbstractVideoCrawler crawler = new PornyVideoCrawler(null);
+        AbstractVideoCrawler crawler = new PornyCrawler();
         Document document = Jsoup.parse(htmlString);
         return crawler.getVideoBaseInfo(document);
     }
@@ -298,15 +296,12 @@ public class VideoHandler {
                 videoMap.get(file.getName()).add(file);
             }
         };
-        listFiles(new File(Config.FILE_SAVE_PATH), fileConsumer);
+        listFiles(new File(CrawlerConfig.FILE_SAVE_PATH), fileConsumer);
         return videoMap;
     }
 
-    public void downloadFromM3U8(String m3u8Url, File workspace) {
-        if (!workspace.exists()) {
-            workspace.mkdirs();
-        }
-        M3U8 m3u8 = getM3U8ByUrl(m3u8Url);
+    public boolean downloadFromM3U8(Video video, File workspace) {
+        M3U8 m3u8 = getM3U8ByUrl(video.getDownloadUrl());
         File tempDir = new File(workspace.getPath() + "//" + m3u8.getId());
         if (!tempDir.exists()) {
             tempDir.mkdirs();
@@ -333,7 +328,7 @@ public class VideoHandler {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("download " + file.getName() + " failed", e);
                 }
                 logger.info("{} download success", file.getName());
                 countDownLatch.countDown();
@@ -344,13 +339,17 @@ public class VideoHandler {
             logger.info("all ts file download success");
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
+            return false;
         }
         // ffmpeg工具合并视频片段
         File outputFile = new File(workspace + "\\" + m3u8.getId() + ".mp4");
+        if (outputFile.exists()) outputFile.delete();
         mergeVideo(tempDir, outputFile);
         // 删除
         for (File file : tempDir.listFiles()) file.delete();
         tempDir.delete();
+        outputFile.renameTo(new File(workspace + "\\" + video.getTitle() + ".mp4"));
+        return true;
     }
 
     private M3U8 getM3U8ByUrl(String m3u8Url) {

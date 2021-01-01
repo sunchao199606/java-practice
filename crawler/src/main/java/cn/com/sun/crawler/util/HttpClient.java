@@ -1,7 +1,7 @@
 package cn.com.sun.crawler.util;
 
-import cn.com.sun.crawler.Config;
 import cn.com.sun.crawler.entity.Video;
+import cn.com.sun.crawler.config.CrawlerConfig;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -20,9 +20,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,11 +47,11 @@ public class HttpClient {
         conManager.setDefaultMaxPerRoute(8);
         //conManager.
         httpClient = HttpClients.custom().setConnectionManager(conManager).build();
-        requestConfig = RequestConfig.custom().setConnectTimeout(Config.CONNECT_TIMEOUT)
-                .setSocketTimeout(Config.READ_TIMEOUT).build();
+        requestConfig = RequestConfig.custom().setConnectTimeout(CrawlerConfig.CONNECT_TIMEOUT)
+                .setSocketTimeout(CrawlerConfig.READ_TIMEOUT).build();
         //发送Get请求
-        if (Config.HTTP_PROXY_PORT != -1) {
-            HttpHost proxy = new HttpHost(Config.HTTP_PROXY_HOSTNAME, Config.HTTP_PROXY_PORT);
+        if (CrawlerConfig.HTTP_PROXY_PORT != -1) {
+            HttpHost proxy = new HttpHost(CrawlerConfig.HTTP_PROXY_HOSTNAME, CrawlerConfig.HTTP_PROXY_PORT);
             requestConfig = RequestConfig.copy(requestConfig).setProxy(proxy).build();
         }
     }
@@ -90,7 +88,7 @@ public class HttpClient {
         //发送Get请求
         HttpGet request = createHttpGetRequest(urlStr);
         logger.info("request:{} ", urlStr);
-        for (int tryCount = 1; tryCount <= Config.REQUEST_RETRY_COUNT; tryCount++) {
+        for (int tryCount = 1; tryCount <= CrawlerConfig.REQUEST_RETRY_COUNT; tryCount++) {
             logger.info("try count：" + tryCount);
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 // 从响应模型中获取响应实体
@@ -119,13 +117,13 @@ public class HttpClient {
     public static boolean downloadVideoToFs(Video video, File dir) {
         // 请求
         HttpGet request = createHttpGetRequest(video.getDownloadUrl());
-        request.setConfig(RequestConfig.copy(requestConfig).setSocketTimeout(Config.READ_FILE_TIMEOUT).build());
+        request.setConfig(RequestConfig.copy(requestConfig).setSocketTimeout(CrawlerConfig.READ_FILE_TIMEOUT).build());
         if (!dir.exists()) {
             dir.mkdir();
         }
         // 下载
         String fileName = filterBannedChar(video.getTitle());
-        String filePath = dir.getPath() + File.separator + fileName + Config.EXT;
+        String filePath = dir.getPath() + File.separator + fileName + CrawlerConfig.EXT;
         File file = new File(filePath);
         LocalTime startTime;
         try {
@@ -178,8 +176,8 @@ public class HttpClient {
         HttpURLConnection con = null;
         URL url;
         try {
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(Config.HTTP_PROXY_HOSTNAME,
-                    Config.HTTP_PROXY_PORT));
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(CrawlerConfig.HTTP_PROXY_HOSTNAME,
+                    CrawlerConfig.HTTP_PROXY_PORT));
             url = new URL(urlStr);
             con = (HttpURLConnection) url.openConnection(proxy);
             System.out.println(url.getHost());
@@ -197,8 +195,8 @@ public class HttpClient {
             con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147" +
                     ".89 Safari/537.36");
-            con.setConnectTimeout(Config.CONNECT_TIMEOUT);
-            con.setReadTimeout(Config.READ_TIMEOUT);
+            con.setConnectTimeout(CrawlerConfig.CONNECT_TIMEOUT);
+            con.setReadTimeout(CrawlerConfig.READ_TIMEOUT);
             con.connect();
         } catch (IOException e) {
             e.printStackTrace();

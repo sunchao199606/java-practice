@@ -17,16 +17,16 @@ public class M3U8 {
         return basePath;
     }
 
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
+
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
     }
 
     public List<Ts> getTsList() {

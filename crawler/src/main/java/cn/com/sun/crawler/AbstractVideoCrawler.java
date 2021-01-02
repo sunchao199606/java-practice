@@ -2,7 +2,6 @@ package cn.com.sun.crawler;
 
 import cn.com.sun.crawler.config.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
-import cn.com.sun.crawler.impl.PornCrawler;
 import cn.com.sun.crawler.util.FileAccessManager;
 import cn.com.sun.crawler.util.HttpClient;
 import com.google.common.io.Files;
@@ -54,7 +53,6 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
         }
         return this;
     }
-
 
 
     @Override

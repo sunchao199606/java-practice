@@ -20,4 +20,8 @@ public class CrawlerFactory {
         }
         return videoCrawler;
     }
+    //TODO
+    // httpclient下载
+    // 优化报错及日志
+    //
 }

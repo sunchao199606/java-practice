@@ -22,6 +22,8 @@ public class Video {
     private String author = "";
 
     private int storeNum = 0;
+    private String pageUrl = "";
+    private int watchNum = 0;
 
     public String getPageUrl() {
         return pageUrl;
@@ -30,8 +32,6 @@ public class Video {
     public void setPageUrl(String pageUrl) {
         this.pageUrl = pageUrl;
     }
-
-    private String pageUrl = "";
 
     public int getStoreNum() {
         return storeNum;
@@ -48,8 +48,6 @@ public class Video {
     public void setWatchNum(int watchNum) {
         this.watchNum = watchNum;
     }
-
-    private int watchNum = 0;
 
     public String getAuthor() {
         return author;

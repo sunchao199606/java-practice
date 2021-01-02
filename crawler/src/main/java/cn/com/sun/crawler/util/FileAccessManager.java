@@ -1,7 +1,7 @@
 package cn.com.sun.crawler.util;
 
-import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.config.CrawlerConfig;
+import cn.com.sun.crawler.entity.Video;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +27,9 @@ public class FileAccessManager {
     private static final ReadWriteLock READ_WRITE_LOCK = new ReentrantReadWriteLock();
     private static final Lock READ_LOCK = READ_WRITE_LOCK.readLock();
     private static final Lock WRITE_LOCK = READ_WRITE_LOCK.writeLock();
-
+    private static FileAccessManager instance;
     private File authorFile;
     private File downloadedFile;
-
-    private static FileAccessManager instance;
 
     private FileAccessManager(File dir) {
         this.downloadedFile = new File(dir, "downloaded");

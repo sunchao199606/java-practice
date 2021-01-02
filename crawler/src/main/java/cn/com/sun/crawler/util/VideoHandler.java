@@ -66,6 +66,86 @@ public class VideoHandler {
         }
     }
 
+    public static void encode(File source) {
+        encode(source, null, 600 * 1024);
+    }
+
+    public static void encode(File source, VideoSize size) {
+        encode(source, size, 600 * 1024);
+    }
+
+    /**
+     * 视频编码
+     */
+    public static void encode(File source, VideoSize size, Integer bitRate) {
+        logger.info("encode file : {}", source.getPath());
+        String tempPath = source.getParent() + "\\" + source.getName().replace(".mp4", "");
+        File temp = new File(tempPath);
+        MultimediaObject object = new MultimediaObject(source);
+
+        AudioAttributes audio = new AudioAttributes();
+        VideoAttributes video = new VideoAttributes();
+        if (size != null) video.setSize(size);
+        if (bitRate != null) video.setBitRate(bitRate);
+        EncodingAttributes attrs = new EncodingAttributes();
+        attrs.setEncodingThreads(4);
+        attrs.setOutputFormat("mp4");
+        attrs.setVideoAttributes(video);
+        attrs.setAudioAttributes(audio);
+        Encoder encoder = new Encoder();
+        VideoInfo originVideoInfo = null;
+        MultimediaInfo originMultimediaInfo = null;
+        MultimediaInfo newMultimediaInfo = null;
+        VideoInfo newVideoInfo = null;
+        try {
+            originMultimediaInfo = object.getInfo();
+            originVideoInfo = originMultimediaInfo.getVideo();
+            encoder.encode(object, temp, attrs);
+            MultimediaObject newObj = new MultimediaObject(temp);
+            newMultimediaInfo = newObj.getInfo();
+            newVideoInfo = newMultimediaInfo.getVideo();
+        } catch (EncoderException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            logger.info("before encode width:{} height:{} bitRate:{} frameRate:{} duration:{}s",
+                    originVideoInfo.getSize().getWidth(), originVideoInfo.getSize().getHeight(),
+                    originVideoInfo.getBitRate(), originVideoInfo.getFrameRate(), originMultimediaInfo.getDuration() / 1000);
+            logger.info("after encode width:{} height:{} bitRate:{} frameRate:{} duration:{}s",
+                    newVideoInfo.getSize().getWidth(), newVideoInfo.getSize().getHeight(), newVideoInfo.getBitRate(),
+                    newVideoInfo.getFrameRate(), newMultimediaInfo.getDuration() / 1000);
+        }
+        File target = new File(tempPath + ".mp4");
+
+        if (source.delete())
+            temp.renameTo(target);
+        else
+            logger.error("视频重命名失败");
+    }
+
+    public static void main(String[] args) throws EncoderException {
+        //VideoHandler.encode();
+    }
+
+    public static void listFiles(File dir, Consumer<File> fileConsumer) {
+        for (File f : dir.listFiles()) {
+            if (f.isFile()) {
+                fileConsumer.accept(f);
+            } else {
+                listFiles(f, fileConsumer);
+            }
+        }
+    }
+
+    public static void listFiles(File dir, List<File> fileList) {
+        for (File f : dir.listFiles()) {
+            if (f.isFile()) {
+                fileList.add(f);
+            } else {
+                listFiles(f, fileList);
+            }
+        }
+    }
+
     public void storeByAuthor(String authorName, boolean move) {
         // 1 获取作者全部视频
         List<Video> authorAllVideoList = getAllVideoByAuthor(authorName);
@@ -128,66 +208,6 @@ public class VideoHandler {
 
     }
 
-    public static void encode(File source) {
-        encode(source, null, 600 * 1024);
-    }
-
-    public static void encode(File source, VideoSize size) {
-        encode(source, size, 600 * 1024);
-    }
-
-    /**
-     * 视频编码
-     */
-    public static void encode(File source, VideoSize size, Integer bitRate) {
-        logger.info("encode file : {}", source.getPath());
-        String tempPath = source.getParent() + "\\" + source.getName().replace(".mp4", "");
-        File temp = new File(tempPath);
-        MultimediaObject object = new MultimediaObject(source);
-
-        AudioAttributes audio = new AudioAttributes();
-        VideoAttributes video = new VideoAttributes();
-        if (size != null) video.setSize(size);
-        if (bitRate != null) video.setBitRate(bitRate);
-        EncodingAttributes attrs = new EncodingAttributes();
-        attrs.setEncodingThreads(4);
-        attrs.setOutputFormat("mp4");
-        attrs.setVideoAttributes(video);
-        attrs.setAudioAttributes(audio);
-        Encoder encoder = new Encoder();
-        VideoInfo originVideoInfo = null;
-        MultimediaInfo originMultimediaInfo = null;
-        MultimediaInfo newMultimediaInfo = null;
-        VideoInfo newVideoInfo = null;
-        try {
-            originMultimediaInfo = object.getInfo();
-            originVideoInfo = originMultimediaInfo.getVideo();
-            encoder.encode(object, temp, attrs);
-            MultimediaObject newObj = new MultimediaObject(temp);
-            newMultimediaInfo = newObj.getInfo();
-            newVideoInfo = newMultimediaInfo.getVideo();
-        } catch (EncoderException e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            logger.info("before encode width:{} height:{} bitRate:{} frameRate:{} duration:{}s",
-                    originVideoInfo.getSize().getWidth(), originVideoInfo.getSize().getHeight(),
-                    originVideoInfo.getBitRate(), originVideoInfo.getFrameRate(), originMultimediaInfo.getDuration() / 1000);
-            logger.info("after encode width:{} height:{} bitRate:{} frameRate:{} duration:{}s",
-                    newVideoInfo.getSize().getWidth(), newVideoInfo.getSize().getHeight(), newVideoInfo.getBitRate(),
-                    newVideoInfo.getFrameRate(), newMultimediaInfo.getDuration() / 1000);
-        }
-        File target = new File(tempPath + ".mp4");
-
-        if (source.delete())
-            temp.renameTo(target);
-        else
-            logger.error("视频重命名失败");
-    }
-
-    public static void main(String[] args) throws EncoderException {
-        //VideoHandler.encode();
-    }
-
     public void deleteSmallVideo(int limitSize) {
         File dir = new File("F:\\Download\\crawler");
         List<File> smallFileList = new ArrayList<>();
@@ -236,26 +256,6 @@ public class VideoHandler {
 //                list.get(1).delete();
 //            }
 //        });
-    }
-
-    public static void listFiles(File dir, Consumer<File> fileConsumer) {
-        for (File f : dir.listFiles()) {
-            if (f.isFile()) {
-                fileConsumer.accept(f);
-            } else {
-                listFiles(f, fileConsumer);
-            }
-        }
-    }
-
-    public static void listFiles(File dir, List<File> fileList) {
-        for (File f : dir.listFiles()) {
-            if (f.isFile()) {
-                fileList.add(f);
-            } else {
-                listFiles(f, fileList);
-            }
-        }
     }
 
     private List<Video> getVideos(String url) {

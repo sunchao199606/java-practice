@@ -25,12 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PornCrawler extends AbstractVideoCrawler {
 
     private static final Logger logger = LoggerFactory.getLogger(PornyCrawler.class);
+    private static Browser browser;
+    private static CountDownLatch browserStarted = new CountDownLatch(1);
     private VideoHandler videoHandler = new VideoHandler();
 
     @Override
@@ -88,7 +89,7 @@ public class PornCrawler extends AbstractVideoCrawler {
                 Element shareLink = document.selectFirst("#linkForm2 #fm-video_link");
                 if (shareLink != null) {
                     for (int i = 0; i < 5; i++) {
-                        String shareHtml = Browser.getInstance().getHtml(shareLink.text());
+                        String shareHtml = getBrowser().getHtml(shareLink.text());
                         Element shareDocument = Jsoup.parse(shareHtml);
                         if (shareDocument.selectFirst("source") == null) {
                             continue;
@@ -108,19 +109,31 @@ public class PornCrawler extends AbstractVideoCrawler {
             logger.info("get {} download url: {}", video.getTitle(), video.getDownloadUrl());
             downloadList.add(video);
         }
-        Browser.getInstance().destroy();
+        // 关闭浏览器
+        if (CefApp.getState() == CefApp.CefAppState.INITIALIZED) {
+            getBrowser().destroy();
+        }
         return this;
     }
 
-    private static class Browser {
+    private Browser getBrowser() {
+        if (browser == null) {
+            browser = new Browser();
+            try {
+                browserStarted.await();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        return browser;
+    }
+
+    private class Browser {
         private CefBrowser browser;
         private String currentHtml = "";
-        private boolean min = false;
         private JFrame jFrame;
         private CefApp cefApp;
-        private static Browser instance;
-        private static AtomicReference<CountDownLatch> countDownLatch = new AtomicReference<>();
-        private static CountDownLatch instanceReady = new CountDownLatch(1);
+        private AtomicReference<CountDownLatch> countDownLatch = new AtomicReference<>();
 
         private Browser() {
             jFrame = new JFrame();
@@ -130,13 +143,14 @@ public class PornCrawler extends AbstractVideoCrawler {
                 @Override
                 public void onLoadEnd(CefBrowser cefBrowser, CefFrame cefFrame, int i) {
                     cefBrowser.getSource(html -> {
-                        currentHtml = html;
-                        if (instanceReady.getCount() != 0) {
-                            instanceReady.countDown();
+                        if (browserStarted.getCount() > 0) {
+                            // 解除等待
+                            browserStarted.countDown();
+                            // 最小化窗口
                             jFrame.setExtendedState(Frame.ICONIFIED);
-                            min = true;
                             return;
                         }
+                        currentHtml = html;
                         countDownLatch.get().countDown();
                     });
                 }
@@ -152,31 +166,17 @@ public class PornCrawler extends AbstractVideoCrawler {
         }
 
         public String getHtml(String url) {
+            // 初始化
             currentHtml = "";
             browser.loadURL(url);
             CountDownLatch latch = new CountDownLatch(1);
             countDownLatch.set(latch);
             try {
-                latch.await(20, TimeUnit.SECONDS);
+                latch.await();
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
             }
-            if (currentHtml.isEmpty()) {
-                logger.warn("get {} html timeout", url);
-            }
             return currentHtml;
-        }
-
-        public static Browser getInstance() {
-            if (instance == null) {
-                instance = new Browser();
-                try {
-                    instanceReady.await();
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-            return instance;
         }
 
         public void destroy() {

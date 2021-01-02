@@ -7,6 +7,6 @@ package cn.com.sun.crawler;
  */
 public class CrawlerRunner {
     public static void main(String[] args) {
-        CrawlerFactory.newCrawler().parseVideo().parseDownloadInfo().download();
+        CrawlerFactory.newCrawler().parseVideoBaseInfo().parseVideoExtInfo().parseDownloadUrl().download();
     }
 }

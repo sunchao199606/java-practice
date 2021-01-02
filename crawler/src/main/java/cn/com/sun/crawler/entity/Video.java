@@ -11,9 +11,9 @@ public class Video {
 
     private String id = "";
 
-    private String downloadUrl = "";
+    private String shareUrl = "";
 
-    private String coverUrl = "";
+    private String downloadUrl = "";
 
     private String title = "null";
 
@@ -49,6 +49,14 @@ public class Video {
         this.watchNum = watchNum;
     }
 
+    public String getShareUrl() {
+        return shareUrl;
+    }
+
+    public void setShareUrl(String shareUrl) {
+        this.shareUrl = shareUrl;
+    }
+
     public String getAuthor() {
         return author;
     }
@@ -71,14 +79,6 @@ public class Video {
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
-    }
-
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
     }
 
     public String getTitle() {

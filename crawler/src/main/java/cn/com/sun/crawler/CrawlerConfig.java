@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 public class CrawlerConfig {
-    private static final Logger logger = LoggerFactory.getLogger(CrawlerConfig.class);
     public static final String EXT = ".mp4";
     public static final String HTTP_PROXY_HOSTNAME = "localhost";
     public static final String FILE_SAVE_PATH = "F://Download//crawler//";
@@ -29,7 +28,7 @@ public class CrawlerConfig {
      * 本机代理端口，若为-1，则不走代理
      */
     public static final int HTTP_PROXY_PORT = 1080;
-
+    private static final Logger logger = LoggerFactory.getLogger(CrawlerConfig.class);
     public static String domain;
     public static String homePage;
     public static String hot;
@@ -42,7 +41,7 @@ public class CrawlerConfig {
     /**
      * crawler类型
      */
-    public static Class crawler = PornCrawler.class;
+    public static Class crawler = PornyCrawler.class;
     public static String[] pages;
     public static String[] daily;
     public static String[] allLastMonthHot = new String[5];
@@ -55,13 +54,15 @@ public class CrawlerConfig {
     static {
         initPages();
         pages = daily;
-        //pages = new String[]{"http://0728.91p50.com/v.php?category=hot&viewtype=basic&page=2"};
+        //pages = new String[]{"http://0728.91p50.com/uvideos.php?UID=b41cJANU7wyUhcQnmUc3AveGBv3rT35NOuM8Qj6x449R6vj1&type=public&page=3"};
         initWorkspace();
     }
 
     static void initPages() {
         if (crawler == PornCrawler.class) {
-            domain = "http://0728.91p50.com";
+            //http://91.91p07.com
+            //http://0728.91p50.com
+            domain = "http://91.91p07.com";
             homePage = domain + "/index.php";
             hot = domain + "/v.php?category=hot&viewtype=basic";
             recentHighlight = domain + "/v.php?category=rf&viewtype=basic";

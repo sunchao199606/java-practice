@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -26,13 +25,14 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
     protected List<Video> downloadList = new ArrayList<>();
 
     @Override
-    public VideoCrawler parseVideo() {
+    public VideoCrawler parseVideoBaseInfo() {
         List<Video> tempVideoList = new ArrayList<>();
         for (String pageUrl : CrawlerConfig.pages) {
             logger.info("crawler parse page :{} start", pageUrl);
             String htmlString = HttpClient.getHtmlByHttpClient(pageUrl);
             Map<String, String> downloadedMap = FileAccessManager.getInstance().read();
             Document document = Jsoup.parse(htmlString);
+            // id title pageUrl
             List<Video> list = getVideoBaseInfo(document).stream().filter(video -> {
                 if (downloadedMap.keySet().contains(video.getId())) {
                     logger.info("filter downloaded video:{}", video.getTitle());
@@ -44,7 +44,7 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
             tempVideoList.addAll(list);
             logger.info("crawler parse page :{} end", pageUrl);
         }
-        videoList = tempVideoList.stream().distinct().sorted(Comparator.comparingInt(Video::getDuration)).collect(Collectors.toList());
+        videoList = tempVideoList.stream().distinct().collect(Collectors.toList());
         if (videoList.size() > 0) {
             logger.info("video list：↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓");
             videoList.forEach(video -> logger.info(video.toString()));

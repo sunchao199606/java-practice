@@ -1,8 +1,8 @@
 package cn.com.sun.crawler.impl;
 
 import cn.com.sun.crawler.AbstractVideoCrawler;
-import cn.com.sun.crawler.VideoCrawler;
 import cn.com.sun.crawler.CrawlerConfig;
+import cn.com.sun.crawler.VideoCrawler;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.util.HttpClient;
 import org.jsoup.Jsoup;
@@ -44,8 +44,6 @@ public class PornyCrawler extends AbstractVideoCrawler {
             // pageUrl
             String pageUrl = URL_PREFIX + first.attr("href");
             video.setPageUrl(pageUrl);
-            // coverUrl
-            // video.setCoverUrl(a.select("img").first().attr("src"));
             // duration
             Element duration = first.select(".layer").first();
             String durationStr = duration.text().trim();
@@ -67,7 +65,12 @@ public class PornyCrawler extends AbstractVideoCrawler {
     }
 
     @Override
-    public VideoCrawler parseDownloadInfo() {
+    public VideoCrawler parseVideoExtInfo() {
+        return this;
+    }
+
+    @Override
+    public VideoCrawler parseDownloadUrl() {
         for (Video video : videoList) {
             if (!parseVideoDownloadInfo(video)) {
                 logger.warn("get {} download url failed", video.getTitle());

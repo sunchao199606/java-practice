@@ -22,5 +22,4 @@ public class CrawlerFactory {
     //TODO
     // httpclient下载
     // 优化报错及日志
-    //
 }

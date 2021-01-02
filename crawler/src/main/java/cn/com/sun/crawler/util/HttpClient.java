@@ -166,7 +166,7 @@ public class HttpClient {
         request.setHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7");
         request.setHeader("Accept-Encoding", "gzip");
         request.setHeader("Referer", urlStr);
-        //request.setHeader("X-Forwarded-For", randomIp());
+        request.setHeader("X-Forwarded-For", randomIp());
         request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                 "Chrome/84.0.4147.89 Safari/537.36");
         return request;

@@ -1,6 +1,6 @@
 package cn.com.sun.crawler.util;
 
-import cn.com.sun.crawler.config.CrawlerConfig;
+import cn.com.sun.crawler.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;

@@ -2,7 +2,7 @@ package cn.com.sun.crawler.impl;
 
 import cn.com.sun.crawler.AbstractVideoCrawler;
 import cn.com.sun.crawler.VideoCrawler;
-import cn.com.sun.crawler.config.CrawlerConfig;
+import cn.com.sun.crawler.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.util.HttpClient;
 import cn.com.sun.crawler.util.VideoHandler;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PornCrawler extends AbstractVideoCrawler {
@@ -60,9 +61,9 @@ public class PornCrawler extends AbstractVideoCrawler {
             String text = ownText.substring(ownText.lastIndexOf(" 前 ") + 3);
             video.setAuthor(text.split(" ")[0]);
             // watchNum
-            video.setWatchNum(Integer.parseInt(text.split(" ")[1].trim()));
+            //video.setWatchNum(Integer.parseInt(text.split(" ")[1].trim()));
             // storeNum
-            video.setStoreNum(Integer.parseInt(text.split(" ")[2].trim()));
+            //video.setStoreNum(Integer.parseInt(text.split(" ")[2].trim()));
             videoList.add(video);
         }
         return videoList;
@@ -70,7 +71,11 @@ public class PornCrawler extends AbstractVideoCrawler {
 
     @Override
     protected Callable<Boolean> createDownloadTask(Video video) {
-        return () -> videoHandler.downloadFromM3U8(video, CrawlerConfig.workspace);
+        if (video.getDownloadUrl().contains(".mp4?")) {
+            return () -> HttpClient.downloadVideoToFs(video, CrawlerConfig.workspace);
+        } else {
+            return () -> videoHandler.downloadFromM3U8(video, CrawlerConfig.workspace);
+        }
     }
 
     @Override
@@ -172,7 +177,7 @@ public class PornCrawler extends AbstractVideoCrawler {
             CountDownLatch latch = new CountDownLatch(1);
             countDownLatch.set(latch);
             try {
-                latch.await();
+                latch.await(25, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
             }

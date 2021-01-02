@@ -1,6 +1,5 @@
 package cn.com.sun.crawler;
 
-import cn.com.sun.crawler.config.CrawlerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

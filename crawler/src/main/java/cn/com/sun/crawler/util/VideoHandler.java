@@ -1,7 +1,7 @@
 package cn.com.sun.crawler.util;
 
 import cn.com.sun.crawler.AbstractVideoCrawler;
-import cn.com.sun.crawler.config.CrawlerConfig;
+import cn.com.sun.crawler.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.impl.PornyCrawler;
 import cn.com.sun.crawler.m3u8.M3U8;
@@ -26,6 +26,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -301,13 +302,19 @@ public class VideoHandler {
     }
 
     public boolean downloadFromM3U8(Video video, File workspace) {
+        AtomicBoolean success = new AtomicBoolean(true);
         M3U8 m3u8 = getM3U8ByUrl(video.getDownloadUrl());
         File tempDir = new File(workspace.getPath() + "//" + m3u8.getId());
         if (!tempDir.exists()) {
             tempDir.mkdirs();
         }
+        // 删除已有的
+        for (File old : tempDir.listFiles()) {
+            old.delete();
+        }
         String basePath = m3u8.getBasePath();
         CountDownLatch countDownLatch = new CountDownLatch(m3u8.getTsList().size());
+        logger.info("download video start name:{}", video.getTitle());
         m3u8.getTsList().stream().parallel().forEach(m3U8Ts -> {
             File file = new File(tempDir + File.separator + m3U8Ts.getFile());
             if (!file.exists()) {
@@ -328,19 +335,24 @@ public class VideoHandler {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("download " + file.getName() + " failed", e);
+                    success.set(false);
+                    logger.error("download " + video.getTitle() + " " + m3U8Ts.getFile() + " failed");
                 }
-                logger.info("{} download success", file.getName());
+                //logger.info("{} download success", file.getName());
                 countDownLatch.countDown();
             }
         });
         try {
             countDownLatch.await();
-            logger.info("all ts file download success");
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
             return false;
         }
+        if (!success.get()) {
+            logger.info("download video failed name:{}", video.getTitle());
+            return success.get();
+        }
+        logger.info("download video success name:{}", video.getTitle());
         // ffmpeg工具合并视频片段
         File outputFile = new File(workspace + "\\" + m3u8.getId() + ".mp4");
         if (outputFile.exists()) outputFile.delete();

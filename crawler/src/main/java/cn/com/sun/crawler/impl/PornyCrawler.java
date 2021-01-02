@@ -2,7 +2,7 @@ package cn.com.sun.crawler.impl;
 
 import cn.com.sun.crawler.AbstractVideoCrawler;
 import cn.com.sun.crawler.VideoCrawler;
-import cn.com.sun.crawler.config.CrawlerConfig;
+import cn.com.sun.crawler.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.util.HttpClient;
 import org.jsoup.Jsoup;

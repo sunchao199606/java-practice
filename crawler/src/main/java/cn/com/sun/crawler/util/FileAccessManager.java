@@ -2,6 +2,10 @@ package cn.com.sun.crawler.util;
 
 import cn.com.sun.crawler.CrawlerConfig;
 import cn.com.sun.crawler.entity.Video;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +32,18 @@ public class FileAccessManager {
     private static final Lock READ_LOCK = READ_WRITE_LOCK.readLock();
     private static final Lock WRITE_LOCK = READ_WRITE_LOCK.writeLock();
     private static FileAccessManager instance;
-    private File authorFile;
-    private File downloadedFile;
+    private File jsonFile;
+    private ObjectMapper mapper;
 
-    private FileAccessManager(File dir) {
-        this.downloadedFile = new File(dir, "downloaded");
-        this.authorFile = new File(dir, "authorInfo");
+    private FileAccessManager(File file) {
+        this.jsonFile = file;
+        this.mapper = new ObjectMapper();
+        //在序列化时忽略值为 null 的属性
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        //忽略值为默认值的属性
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+        //在反序列化时忽略在 json 中存在但 Java 对象不存在的属性
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public static FileAccessManager getInstance() {
@@ -49,16 +59,19 @@ public class FileAccessManager {
      *
      * @return
      */
-    public Map<String, String> read() {
-        Map<String, String> map = new HashMap<>();
+    public Map<String, Video> read() {
+        Map<String, Video> map = new HashMap<>();
         READ_LOCK.lock();
         try {
             //logger.info("{} get readLock", Thread.currentThread().getName());
-            try (BufferedReader br = new BufferedReader(new FileReader(downloadedFile))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(jsonFile))) {
                 br.lines().forEach(info -> {
-                    String id = "";
-                    id = info.substring(0, info.indexOf("|"));
-                    map.putIfAbsent(id, info);
+                    try {
+                        Video video = mapper.readValue(info, Video.class);
+                        map.put(video.getId(), video);
+                    } catch (JsonProcessingException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 });
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
@@ -79,45 +92,17 @@ public class FileAccessManager {
         WRITE_LOCK.lock();
         try {
             //logger.info("{} get writeLock", Thread.currentThread().getName());
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(downloadedFile, true))) {
-                bw.write(video + "\n");
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(jsonFile, true))) {
+                String json = mapper.writeValueAsString(video);
+                bw.write(json + "\n");
                 bw.flush();
-                logger.info("write downloaded file:{}", video.getTitle() + ".mp4");
+                logger.info("write json file:{}", video.getTitle());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
         } finally {
             WRITE_LOCK.unlock();
             //logger.info("{} release writeLock", Thread.currentThread().getName());
-        }
-    }
-
-    /**
-     * 是否已下载
-     *
-     * @param video
-     * @return
-     */
-    public boolean isDownloaded(Video video) {
-        Map<String, String> map = read();
-        if (map.keySet().contains(video.getId())) {
-            return true;
-        }
-        return false;
-    }
-
-    public void writeAuthor(Video video) {
-        WRITE_LOCK.lock();
-        try {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(authorFile, true))) {
-                bw.write(String.format("%s|%s\n", video, video.getAuthor()));
-                bw.flush();
-                logger.info("write author file:{}", video.getAuthor());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-            }
-        } finally {
-            WRITE_LOCK.unlock();
         }
     }
 }

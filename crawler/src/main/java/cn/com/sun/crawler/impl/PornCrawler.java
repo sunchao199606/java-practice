@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PornCrawler extends AbstractVideoCrawler {
 
-    private static final Logger logger = LoggerFactory.getLogger(PornyCrawler.class);
+    private static final Logger logger = LoggerFactory.getLogger(PornCrawler.class);
     private static Browser browser;
     private static CountDownLatch browserStarted = new CountDownLatch(1);
     private VideoHandler videoHandler = new VideoHandler();
@@ -85,6 +85,8 @@ public class PornCrawler extends AbstractVideoCrawler {
             }
             // author
             video.setAuthor(document.select(".title-yakov").last().selectFirst(".title").text());
+            // date
+            video.setDate(document.select(".title-yakov").get(1).text());
             // shareUrl
             video.setShareUrl(document.selectFirst("#linkForm2 #fm-video_link").text());
         }

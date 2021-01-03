@@ -39,7 +39,7 @@ public class VideoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoHandler.class);
 
-    private final Map<String, String> recordMap;
+    private final Map<String, Video> recordMap;
 
     private final Map<String, List<File>> downloadedMap;
 
@@ -167,8 +167,8 @@ public class VideoHandler {
                 return;
             } else {
                 if (recordMap.keySet().contains(video.getId())) {
-                    String info = recordMap.get(video.getId());
-                    String originName = info.substring(info.indexOf("|") + 1) + CrawlerConfig.EXT;
+                    Video info = recordMap.get(video.getId());
+                    String originName = video.getTitle() + CrawlerConfig.EXT;
                     List<File> list = downloadedMap.get(originName);
                     if (list == null) {
                         logger.error("not exist file: {}", originName);
@@ -216,7 +216,7 @@ public class VideoHandler {
             //&& VideoUtil.getVideoDuration(f) > 90
             if (f.length() < limitSize) smallFileList.add(f);
         });
-        Set<String> downloadedFileSet = FileAccessManager.getInstance().read().values().stream().map(key -> key.substring(key.indexOf("|") + 1)).collect(Collectors.toSet());
+        Set<String> downloadedFileSet = FileAccessManager.getInstance().read().values().stream().map(video -> video.getTitle()).collect(Collectors.toSet());
 //                map(key -> key.split("|")[1]).collect(Collectors.toSet());
         //downloadedFileSet.forEach(s -> System.out.println(s));
         List<File> deleteList = new ArrayList<>();

@@ -1,5 +1,8 @@
 package cn.com.sun.crawler.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.Objects;
 
 /**
@@ -7,22 +10,28 @@ import java.util.Objects;
  * @Author : Mockingbird
  * @Date: 2020-07-18 18:47
  */
+@JsonPropertyOrder({"id", "title", "author", "date", "storeNum", "watchNum", "duration"})
 public class Video {
+
+    @JsonIgnore
+    private String shareUrl = "";
+    @JsonIgnore
+    private String downloadUrl = "";
+    @JsonIgnore
+    private String pageUrl = "";
 
     private String id = "";
 
-    private String shareUrl = "";
-
-    private String downloadUrl = "";
-
     private String title = "null";
-
-    private int duration = 0;
 
     private String author = "";
 
+    private int duration = 0;
+
+    private String date = "";
+
     private int storeNum = 0;
-    private String pageUrl = "";
+
     private int watchNum = 0;
 
     public String getPageUrl() {
@@ -114,5 +123,13 @@ public class Video {
     @Override
     public int hashCode() {
         return Objects.hash(id, title);
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

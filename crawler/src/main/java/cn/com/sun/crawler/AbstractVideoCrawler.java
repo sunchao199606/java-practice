@@ -30,7 +30,7 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
         for (String pageUrl : CrawlerConfig.pages) {
             logger.info("crawler parse page :{} start", pageUrl);
             String htmlString = HttpClient.getHtmlByHttpClient(pageUrl);
-            Map<String, String> downloadedMap = FileAccessManager.getInstance().read();
+            Map<String, Video> downloadedMap = FileAccessManager.getInstance().read();
             Document document = Jsoup.parse(htmlString);
             // id title pageUrl
             List<Video> list = getVideoBaseInfo(document).stream().filter(video -> {
@@ -76,7 +76,6 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
                 try {
                     if (result.get().booleanValue()) {
                         FileAccessManager.getInstance().write(video);
-                        FileAccessManager.getInstance().writeAuthor(video);
                         succeeded.incrementAndGet();
                     } else {
                         failed.incrementAndGet();
@@ -106,15 +105,10 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
     }
 
     private void copyRecordFile() {
-        String downloadedPath = System.getProperty("user.home") + "\\downloaded";
-        String authorInfoPath = System.getProperty("user.home") + "\\authorInfo";
-        File fromDownloaded = new File(CrawlerConfig.FILE_SAVE_PATH + "downloaded");
+        String downloadedPath = System.getProperty("user.home") + "\\crawler.json";
         File toDownloaded = new File(downloadedPath);
-        File fromAuthorInfo = new File(CrawlerConfig.FILE_SAVE_PATH + "authorInfo");
-        File toAuthorInfo = new File(authorInfoPath);
         try {
-            Files.copy(fromDownloaded, toDownloaded);
-            Files.copy(fromAuthorInfo, toAuthorInfo);
+            Files.copy(CrawlerConfig.JSON, toDownloaded);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }

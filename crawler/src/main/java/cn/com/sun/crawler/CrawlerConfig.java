@@ -17,6 +17,7 @@ public class CrawlerConfig {
     public static final String HTTP_PROXY_HOSTNAME = "localhost";
     public static final String FILE_SAVE_PATH = "F://Download//crawler//";
     public static final String AUTHOR_PATH = "F://Download//crawler//author//";
+    public static final File JSON = new File(FILE_SAVE_PATH + "crawler.json");
     public static final int CONNECT_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 5000;
     public static final int READ_FILE_TIMEOUT = 60000;
@@ -41,7 +42,7 @@ public class CrawlerConfig {
     /**
      * crawler类型
      */
-    public static Class crawler = PornyCrawler.class;
+    public static Class crawler = PornCrawler.class;
     public static String[] pages;
     public static String[] daily;
     public static String[] allLastMonthHot = new String[5];
@@ -54,7 +55,7 @@ public class CrawlerConfig {
     static {
         initPages();
         pages = daily;
-        //pages = new String[]{"http://0728.91p50.com/uvideos.php?UID=b41cJANU7wyUhcQnmUc3AveGBv3rT35NOuM8Qj6x449R6vj1&type=public&page=3"};
+        //pages = new String[]{"http://0728.91p50.com/uvideos.php?UID=b41cJANU7wyUhcQnmUc3AveGBv3rT35NOuM8Qj6x449R6vj1&type=public&page=4"};
         initWorkspace();
     }
 

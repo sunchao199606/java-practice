@@ -6,6 +6,7 @@ import org.cef.OS;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
 import org.cef.handler.CefLoadHandlerAdapter;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +15,9 @@ import java.awt.*;
 
 public class Cef {
     private static final Logger logger = LoggerFactory.getLogger(Cef.class);
-    private static boolean min = false;
 
-    public static void main(String[] args) {
+    @Test
+    public void main(String[] args) {
         JFrame jFrame = new JFrame();
         CefApp cefApp = CefApp.getInstance();
         CefClient cefClient = cefApp.createClient();
@@ -24,13 +25,9 @@ public class Cef {
             @Override
             public void onLoadEnd(CefBrowser cefBrowser, CefFrame cefFrame, int i) {
                 cefBrowser.getSource(s -> logger.info("html : {}" + s));
-                if (!min) {
-                    jFrame.setExtendedState(Frame.ICONIFIED);
-                    min = true;
-                }
             }
         });
-        CefBrowser browser = cefClient.createBrowser("https://www.baidu.com/", OS.isLinux(), false);
+        CefBrowser browser = cefClient.createBrowser("http://0728.91p50.com/view_video.php?viewkey=df7c3529588a578bc573", OS.isLinux(), false);
 
         jFrame.getContentPane().add(browser.getUIComponent(), BorderLayout.CENTER);
         jFrame.pack();

@@ -1,7 +1,6 @@
 package cn.com.sun.crawler;
 
 import cn.com.sun.crawler.entity.Video;
-import cn.com.sun.crawler.AbstractVideoCrawler;
 import cn.com.sun.crawler.impl.PornyCrawler;
 import cn.com.sun.crawler.util.HttpClient;
 import cn.com.sun.crawler.util.VideoHandler;
@@ -31,6 +30,13 @@ public class VideoHandlerRunner {
 
     private VideoHandler handler;
 
+    public static Stream<File> fileGenerator() {
+        String dir = "F:\\Download\\crawler\\2020-09";
+        List<File> fileList = new ArrayList<>();
+        VideoHandler.listFiles(new File(dir), fileList);
+        return fileList.stream();
+    }
+
     @BeforeEach
     public void init() {
         handler = new VideoHandler();
@@ -58,7 +64,7 @@ public class VideoHandlerRunner {
     }
 
     @ParameterizedTest()
-    @ValueSource(strings = {".mp4",".mp4"})
+    @ValueSource(strings = {".mp4", ".mp4"})
     public void encodeTo480(String name) {
         File file = new File(dir + "\\" + name);
         VideoHandler.encode(file, new VideoSize(480, 360));
@@ -99,12 +105,5 @@ public class VideoHandlerRunner {
         AbstractVideoCrawler crawler = new PornyCrawler();
         Document document = Jsoup.parse(htmlString);
         return crawler.getVideoBaseInfo(document);
-    }
-
-    public static Stream<File> fileGenerator() {
-        String dir = "F:\\Download\\crawler\\2020-09";
-        List<File> fileList = new ArrayList<>();
-        VideoHandler.listFiles(new File(dir), fileList);
-        return fileList.stream();
     }
 }

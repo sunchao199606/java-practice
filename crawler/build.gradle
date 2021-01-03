@@ -28,5 +28,8 @@ dependencies {
     compile group: 'ws.schild', name: 'jave-nativebin-win64', version: '3.0.0'
     // jcef
     compile fileTree(dir: 'libs', includes: ['*jar'])
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.0'
+
 
 }

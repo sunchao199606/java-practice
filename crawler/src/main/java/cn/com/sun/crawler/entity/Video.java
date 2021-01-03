@@ -10,7 +10,7 @@ import java.util.Objects;
  * @Author : Mockingbird
  * @Date: 2020-07-18 18:47
  */
-@JsonPropertyOrder({"id", "title", "author", "date", "storeNum", "watchNum", "duration"})
+@JsonPropertyOrder({"id", "title", "author", "date", "storeNum", "watchNum", "duration", "uid"})
 public class Video {
 
     @JsonIgnore
@@ -25,6 +25,15 @@ public class Video {
     private String title = "null";
 
     private String author = "";
+    private String uid = "";
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getUid() {
+        return uid;
+    }
 
     private int duration = 0;
 

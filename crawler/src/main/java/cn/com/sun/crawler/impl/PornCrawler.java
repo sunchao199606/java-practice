@@ -85,6 +85,9 @@ public class PornCrawler extends AbstractVideoCrawler {
             }
             // author
             video.setAuthor(document.select(".title-yakov").last().selectFirst(".title").text());
+            // uid
+            String href = document.select(".title-yakov").last().select("a").first().attr("href");
+            video.setUid(href.substring(href.indexOf("?UID=") + 5));
             // date
             video.setDate(document.select(".title-yakov").get(1).text());
             // shareUrl

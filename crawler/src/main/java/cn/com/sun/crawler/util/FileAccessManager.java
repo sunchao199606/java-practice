@@ -48,8 +48,7 @@ public class FileAccessManager {
 
     public static FileAccessManager getInstance() {
         if (instance == null) {
-            File dir = new File(CrawlerConfig.FILE_SAVE_PATH);
-            instance = new FileAccessManager(dir);
+            instance = new FileAccessManager(CrawlerConfig.JSON);
         }
         return instance;
     }

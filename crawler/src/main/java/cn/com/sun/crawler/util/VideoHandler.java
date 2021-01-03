@@ -354,13 +354,12 @@ public class VideoHandler {
         }
         logger.info("download video success name:{}", video.getTitle());
         // ffmpeg工具合并视频片段
-        File outputFile = new File(workspace + "\\" + m3u8.getId() + ".mp4");
+        File outputFile = new File(workspace + "\\" + video.getTitle() + ".mp4");
         if (outputFile.exists()) outputFile.delete();
         mergeVideo(tempDir, outputFile);
         // 删除
         for (File file : tempDir.listFiles()) file.delete();
         tempDir.delete();
-        outputFile.renameTo(new File(workspace + "\\" + video.getTitle() + ".mp4"));
         return true;
     }
 

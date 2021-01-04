@@ -109,9 +109,9 @@ public class PornCrawler extends AbstractVideoCrawler {
                 downloadUrl = fromShareUrl(video);
             }
             // 页面里面取
-            if (downloadUrl.isEmpty()) {
-                downloadUrl = fromPageUrl(video);
-            }
+//            if (downloadUrl.isEmpty()) {
+//                downloadUrl = fromPageUrl(video);
+//            }
             if (downloadUrl.isEmpty()) {
                 logger.warn("get {} download url failed", video.getTitle());
                 continue;

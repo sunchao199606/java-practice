@@ -91,6 +91,10 @@ public class PornCrawler extends AbstractVideoCrawler {
             // date
             video.setDate(document.select(".title-yakov").get(1).text());
             // shareUrl
+            if (document.selectFirst("#linkForm2 #fm-video_link") == null) {
+                logger.info("get video {} shareUrl failed", video);
+                continue;
+            }
             video.setShareUrl(document.selectFirst("#linkForm2 #fm-video_link").text());
         }
         return this;
@@ -100,9 +104,11 @@ public class PornCrawler extends AbstractVideoCrawler {
     public VideoCrawler parseDownloadUrl() {
         for (Video video : videoList) {
             String downloadUrl = "";
-            // 页面里面取
-            downloadUrl = fromShareUrl(video);
             // 从分享链接里面取
+            if (!video.getShareUrl().isEmpty()) {
+                downloadUrl = fromShareUrl(video);
+            }
+            // 页面里面取
             if (downloadUrl.isEmpty()) {
                 downloadUrl = fromPageUrl(video);
             }
@@ -139,16 +145,14 @@ public class PornCrawler extends AbstractVideoCrawler {
     private String fromShareUrl(Video video) {
         String downloadUrl = "";
         // 分享链接里面取
-        if (!video.getShareUrl().isEmpty()) {
-            for (int i = 0; i < 5; i++) {
-                String shareHtml = getBrowser().getHtml(video.getShareUrl());
-                Element shareDocument = Jsoup.parse(shareHtml);
-                if (shareDocument.selectFirst("source") == null) {
-                    continue;
-                } else {
-                    downloadUrl = shareDocument.selectFirst("source").attr("src");
-                    break;
-                }
+        for (int i = 0; i < 5; i++) {
+            String shareHtml = getBrowser().getHtml(video.getShareUrl());
+            Element shareDocument = Jsoup.parse(shareHtml);
+            if (shareDocument.selectFirst("source") == null) {
+                continue;
+            } else {
+                downloadUrl = shareDocument.selectFirst("source").attr("src");
+                break;
             }
         }
         return downloadUrl;

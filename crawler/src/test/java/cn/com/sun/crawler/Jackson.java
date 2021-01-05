@@ -59,7 +59,7 @@ public class Jackson {
         video.setStoreNum(300);
         video.setWatchNum(30000);
         video.setShareUrl("shareUrl");
-        video.setPageUrl("pageUrl");
+        video.setHref("pageUrl");
         video.setDownloadUrl("downloadUrl");
         System.out.println(mapper.writeValueAsString(video));
     }

@@ -80,30 +80,34 @@ public class HttpClient {
     /**
      * 使用HttpClient获取指定url的返回
      *
-     * @param urlStr
+     * @param url
      * @return
      */
-    public static String getHtmlByHttpClient(String urlStr) {
+    public static String getHtmlByHttpClient(String url) {
         String html = "";
         //发送Get请求
-        HttpGet request = createHttpGetRequest(urlStr);
-        logger.info("request:{} ", urlStr);
+        HttpGet request = createHttpGetRequest(url);
+        logger.info("begin request : {}", url);
         for (int tryCount = 1; tryCount <= CrawlerConfig.REQUEST_RETRY_COUNT; tryCount++) {
             logger.info("try count：" + tryCount);
             try (CloseableHttpResponse response = httpClient.execute(request)) {
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    throw new Exception("response status:" + response.getStatusLine());
+                }
                 // 从响应模型中获取响应实体
                 HttpEntity responseEntity = response.getEntity();
-                logger.info("response status:{} ", response.getStatusLine());
                 if (responseEntity != null) {
+                    logger.info("response status:{} ", response.getStatusLine());
                     html = EntityUtils.toString(responseEntity);
-                    //logger.debug("response content:{} ", html);
+                    break;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage());
                 continue;
             }
-            logger.info("request success");
-            break;
+        }
+        if (html.isEmpty()) {
+            logger.error("request : {} failed", url);
         }
         return html;
     }

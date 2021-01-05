@@ -41,9 +41,9 @@ public class PornyCrawler extends AbstractVideoCrawler {
                 id = "playvthumb" + style.substring(start, end);
             }
             video.setId(id);
-            // pageUrl
+            // href
             String pageUrl = URL_PREFIX + first.attr("href");
-            video.setPageUrl(pageUrl);
+            video.setHref(pageUrl);
             // duration
             Element duration = first.select(".layer").first();
             String durationStr = duration.text().trim();
@@ -83,7 +83,7 @@ public class PornyCrawler extends AbstractVideoCrawler {
     }
 
     private boolean parseVideoDownloadInfo(Video video) {
-        String htmlString = HttpClient.getHtmlByHttpClient(video.getPageUrl());
+        String htmlString = HttpClient.getHtmlByHttpClient(video.getHref());
         Document document = Jsoup.parse(htmlString);
         String downloadUrl = getDownloadUrl(document);
         if ("".equals(downloadUrl)) {

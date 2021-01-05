@@ -82,7 +82,7 @@ public class VideoHandler {
      */
     public static void encode(File source, VideoSize size, Integer bitRate) {
         logger.info("encode file : {}", source.getPath());
-        String tempPath = source.getParent() + "\\" + source.getName().replace(".mp4", "");
+        String tempPath = source.getParent() + File.separator + source.getName().replace(".mp4", "");
         File temp = new File(tempPath);
         MultimediaObject object = new MultimediaObject(source);
 
@@ -356,14 +356,14 @@ public class VideoHandler {
         }
         logger.info("download video success name:{}", video.getTitle());
         // ffmpeg工具合并视频片段
-        File outputFile = new File(workspace + "\\" + m3u8.getId() + CrawlerConfig.EXT);
+        File outputFile = new File(workspace + File.separator + m3u8.getId() + CrawlerConfig.EXT);
         if (outputFile.exists()) outputFile.delete();
         mergeVideo(tempDir, outputFile);
         // 删除
         for (File file : tempDir.listFiles()) file.delete();
         tempDir.delete();
         // 重命名文件
-        File newNameFile = new File(workspace + "\\" + filterBannedChar(video.getTitle()) + CrawlerConfig.EXT);
+        File newNameFile = new File(workspace + File.separator + filterBannedChar(video.getTitle()) + CrawlerConfig.EXT);
         if (!outputFile.renameTo(newNameFile)) {
             logger.error("{} rename to {} failed", outputFile, newNameFile);
             return false;
@@ -427,7 +427,7 @@ public class VideoHandler {
         if (files.length > 1) {
             String ffmpegPath = "D:\\Program\\tools\\ffmpeg\\bin\\ffmpeg.exe";// 此处是配置地址，可自行写死如“”
             String outputPath = outputFile.getPath();
-            String txtPath = tempDir.getPath() + "\\fileList.txt";
+            String txtPath = tempDir.getPath() + File.separator + "fileList.txt";
             try (FileOutputStream fos = new FileOutputStream(new File(txtPath))) {
                 for (File file : files) {
                     fos.write(("file '" + file.getPath() + "'\r\n").getBytes());
@@ -449,7 +449,6 @@ public class VideoHandler {
             command.append(outputPath);
             exeCommand(command.toString());
         }
-
     }
 
     private void exeCommand(String command) {
@@ -460,8 +459,7 @@ public class VideoHandler {
             //此处代码是因为如果合并大视频文件会产生大量的日志缓存导致线程阻塞，最终合并失败，所以加两个线程处理日志的缓存，之后再调用waitFor方法，等待执行结果。
             Process finalProcess = process;
             new Thread(() -> {
-                SequenceInputStream sis = new SequenceInputStream(finalProcess.getInputStream(), finalProcess.getErrorStream());
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(sis))) {
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
                     String line = null;
                     while ((line = in.readLine()) != null) {
                         logger.debug("output:" + line);
@@ -471,16 +469,16 @@ public class VideoHandler {
                 }
             }).start();
 
-//            new Thread(() -> {
-//                try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
-//                    String line = null;
-//                    while ((line = err.readLine()) != null) {
-//                        logger.error("err:" + line);
-//                    }
-//                } catch (IOException e) {
-//                    logger.error(e.getMessage(), e);
-//                }
-//            }).start();
+            new Thread(() -> {
+                try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
+                    String line = null;
+                    while ((line = err.readLine()) != null) {
+                        logger.debug("err:" + line);
+                    }
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }).start();
             // 等待命令子线程执行完成
             finalProcess.waitFor();
         } catch (Exception e) {

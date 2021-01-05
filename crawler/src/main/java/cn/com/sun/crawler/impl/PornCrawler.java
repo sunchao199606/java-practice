@@ -44,8 +44,8 @@ public class PornCrawler extends AbstractVideoCrawler {
             Element a = content.select("a").first();
             // id
             video.setId(a.select("div").first().attr("id"));
-            // singlePageUrl
-            video.setPageUrl(a.attr("href"));
+            // href
+            video.setHref(a.attr("href"));
             // title
             video.setTitle(a.select(".video-title").first().text());
             videoList.add(video);
@@ -65,8 +65,12 @@ public class PornCrawler extends AbstractVideoCrawler {
     @Override
     public VideoCrawler parseVideoExtInfo() {
         for (Video video : videoList) {
-            String pageHtml = HttpClient.getHtmlByHttpClient(video.getPageUrl());
+            String pageHtml = HttpClient.getHtmlByHttpClient(video.getHref());
             Document document = Jsoup.parse(pageHtml);
+            if (document.selectFirst(".boxPart") == null) {
+                logger.error("parse {} ext info failed", video);
+                continue;
+            }
             Elements infos = document.selectFirst(".boxPart").select(".info");
             for (int index = 0; index < infos.size(); index++) {
                 Element info = infos.get(index);
@@ -103,11 +107,11 @@ public class PornCrawler extends AbstractVideoCrawler {
 
     @Override
     public VideoCrawler parseDownloadUrl() {
+        // 从分享链接里面取
         for (Video video : videoList) {
             String downloadUrl = "";
-            // 从分享链接里面取
             if (!video.getShareUrl().isEmpty()) {
-                downloadUrl = fromUrl(video.getShareUrl());
+                downloadUrl = getDownloadUrl(video.getShareUrl());
             }
             if (downloadUrl.isEmpty()) {
                 logger.warn("get {} download url from share url failed", video.getTitle());
@@ -117,11 +121,11 @@ public class PornCrawler extends AbstractVideoCrawler {
             logger.info("get {} download url from share url: {}", video.getTitle(), video.getDownloadUrl());
             downloadList.add(video);
         }
+        // 从pageUrl里面取
         for (Video video : videoList) {
             if (!video.getDownloadUrl().isEmpty()) continue;
             String downloadUrl = "";
-            // 从pageUrl里面取
-            downloadUrl = fromUrl(video.getPageUrl());
+            downloadUrl = getDownloadUrl(video.getHref());
             if (downloadUrl.isEmpty()) {
                 logger.warn("get {} download url from page url failed", video.getTitle());
                 logger.warn("get {} download url failed", video.getTitle());
@@ -138,7 +142,7 @@ public class PornCrawler extends AbstractVideoCrawler {
         return this;
     }
 
-    private String fromUrl(String url) {
+    private String getDownloadUrl(String url) {
         String downloadUrl = "";
         String html = getBrowser().getHtml(url);
         Element document = Jsoup.parse(html);

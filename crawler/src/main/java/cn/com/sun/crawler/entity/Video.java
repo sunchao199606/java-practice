@@ -18,7 +18,7 @@ public class Video {
     @JsonIgnore
     private String downloadUrl = "";
     @JsonIgnore
-    private String pageUrl = "";
+    private String href = "";
     @JsonIgnore
     private String uid = "";
 
@@ -40,12 +40,12 @@ public class Video {
         this.uid = uid;
     }
 
-    public String getPageUrl() {
-        return pageUrl;
+    public String getHref() {
+        return href;
     }
 
-    public void setPageUrl(String pageUrl) {
-        this.pageUrl = pageUrl;
+    public void setHref(String href) {
+        this.href = href;
     }
 
     public int getStoreNum() {

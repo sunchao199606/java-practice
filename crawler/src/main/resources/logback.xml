@@ -9,7 +9,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--             按天轮转 -->
-            <fileNamePattern>log/%d{yyyy-MM}/crawler.%d{MM-dd}.log</fileNamePattern>
+            <fileNamePattern>log/%d{yyyy-MM}/crawler.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!--             保存 30 天的历史记录，最大大小为 30MB -->
             <maxHistory>30</maxHistory>
             <totalSizeCap>30MB</totalSizeCap>

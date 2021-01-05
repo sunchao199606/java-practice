@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static cn.com.sun.crawler.util.CrawlerUtil.filterBannedChar;
+
 /**
  * @Description : 视频工具类
  * @Author : mockingbird
@@ -354,7 +356,7 @@ public class VideoHandler {
         }
         logger.info("download video success name:{}", video.getTitle());
         // ffmpeg工具合并视频片段
-        File outputFile = new File(workspace + "\\" + video.getTitle() + ".mp4");
+        File outputFile = new File(workspace + "\\" + filterBannedChar(video.getTitle()) + ".mp4");
         if (outputFile.exists()) outputFile.delete();
         mergeVideo(tempDir, outputFile);
         // 删除

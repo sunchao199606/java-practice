@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PornCrawler extends AbstractVideoCrawler {
@@ -106,18 +107,28 @@ public class PornCrawler extends AbstractVideoCrawler {
             String downloadUrl = "";
             // 从分享链接里面取
             if (!video.getShareUrl().isEmpty()) {
-                downloadUrl = fromShareUrl(video);
+                downloadUrl = fromUrl(video.getShareUrl());
             }
-            // 页面里面取
-//            if (downloadUrl.isEmpty()) {
-//                downloadUrl = fromPageUrl(video);
-//            }
             if (downloadUrl.isEmpty()) {
+                logger.warn("get {} download url from share url failed", video.getTitle());
+                continue;
+            }
+            video.setDownloadUrl(downloadUrl);
+            logger.info("get {} download url from share url: {}", video.getTitle(), video.getDownloadUrl());
+            downloadList.add(video);
+        }
+        for (Video video : videoList) {
+            if (!video.getDownloadUrl().isEmpty()) continue;
+            String downloadUrl = "";
+            // 从pageUrl里面取
+            downloadUrl = fromUrl(video.getPageUrl());
+            if (downloadUrl.isEmpty()) {
+                logger.warn("get {} download url from page url failed", video.getTitle());
                 logger.warn("get {} download url failed", video.getTitle());
                 continue;
             }
             video.setDownloadUrl(downloadUrl);
-            logger.info("get {} download url: {}", video.getTitle(), video.getDownloadUrl());
+            logger.info("get {} download url from page url: {}", video.getTitle(), video.getDownloadUrl());
             downloadList.add(video);
         }
         // 关闭浏览器
@@ -127,33 +138,12 @@ public class PornCrawler extends AbstractVideoCrawler {
         return this;
     }
 
-    private String fromPageUrl(Video video) {
+    private String fromUrl(String url) {
         String downloadUrl = "";
-        for (int i = 0; i < 5; i++) {
-            String pageHtml = getBrowser().getHtml(video.getPageUrl());
-            Element document = Jsoup.parse(pageHtml);
-            if (document.selectFirst("source") == null) {
-                continue;
-            } else {
-                downloadUrl = document.selectFirst("source").attr("src");
-                break;
-            }
-        }
-        return downloadUrl;
-    }
-
-    private String fromShareUrl(Video video) {
-        String downloadUrl = "";
-        // 分享链接里面取
-        for (int i = 0; i < 5; i++) {
-            String shareHtml = getBrowser().getHtml(video.getShareUrl());
-            Element shareDocument = Jsoup.parse(shareHtml);
-            if (shareDocument.selectFirst("source") == null) {
-                continue;
-            } else {
-                downloadUrl = shareDocument.selectFirst("source").attr("src");
-                break;
-            }
+        String html = getBrowser().getHtml(url);
+        Element document = Jsoup.parse(html);
+        if (document.selectFirst("source") != null) {
+            downloadUrl = document.selectFirst("source").attr("src");
         }
         return downloadUrl;
     }
@@ -215,8 +205,8 @@ public class PornCrawler extends AbstractVideoCrawler {
             CountDownLatch latch = new CountDownLatch(1);
             countDownLatch.set(latch);
             try {
-                latch.await();
-                logger.info("browser load {} success", url);
+                latch.await(60, TimeUnit.SECONDS);
+                logger.info("browser load {} end", url);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
             }

@@ -27,22 +27,18 @@ public class Video {
     private String title = "null";
 
     private String author = "";
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
+    private int duration = 0;
+    private String date = "";
+    private int storeNum = 0;
+    private int watchNum = 0;
 
     public String getUid() {
         return uid;
     }
 
-    private int duration = 0;
-
-    private String date = "";
-
-    private int storeNum = 0;
-
-    private int watchNum = 0;
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getPageUrl() {
         return pageUrl;

@@ -22,9 +22,9 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
+
+import static cn.com.sun.crawler.util.CrawlerUtil.filterBannedChar;
 
 /**
  * @Description : HTTP客户端工具
@@ -213,12 +213,5 @@ public class HttpClient {
         String ip = ipBuilder.deleteCharAt(ipBuilder.length() - 1).toString();
         //logger.debug("request ip:{}", ip);
         return ip;
-    }
-
-    private static String filterBannedChar(String string) {
-        String regEx = "[<>/\\|\"*?]";
-        Pattern p = Pattern.compile(regEx);
-        Matcher m = p.matcher(string);
-        return m.replaceAll("").trim();
     }
 }

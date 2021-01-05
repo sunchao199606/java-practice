@@ -356,7 +356,7 @@ public class VideoHandler {
         }
         logger.info("download video success name:{}", video.getTitle());
         // ffmpeg工具合并视频片段
-        File outputFile = new File(workspace + "\\" + filterBannedChar(video.getTitle()) + ".mp4");
+        File outputFile = new File(workspace + "\\" + filterBannedChar(video.getTitle().replace(" ", "，")) + ".mp4");
         if (outputFile.exists()) outputFile.delete();
         mergeVideo(tempDir, outputFile);
         // 删除
@@ -457,7 +457,7 @@ public class VideoHandler {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
                     String line = null;
                     while ((line = in.readLine()) != null) {
-                        System.out.println("output:" + line);
+                        logger.debug("output:" + line);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -468,7 +468,7 @@ public class VideoHandler {
                 try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
                     String line = null;
                     while ((line = err.readLine()) != null) {
-                        logger.debug("err:" + line);
+                        logger.error("err:" + line);
                     }
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);

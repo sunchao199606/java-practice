@@ -306,7 +306,7 @@ public class VideoHandler {
     public boolean downloadFromM3U8(Video video, File workspace) {
         AtomicBoolean success = new AtomicBoolean(true);
         M3U8 m3u8 = getM3U8ByUrl(video.getDownloadUrl());
-        File tempDir = new File(workspace.getPath() + "//" + filterBannedChar(video.getTitle()));
+        File tempDir = new File(workspace.getPath() + "//" + m3u8.getId());
         if (!tempDir.exists()) {
             tempDir.mkdirs();
         }
@@ -356,12 +356,18 @@ public class VideoHandler {
         }
         logger.info("download video success name:{}", video.getTitle());
         // ffmpeg工具合并视频片段
-        File outputFile = new File(workspace + "\\" + filterBannedChar(video.getTitle().replace(" ", "，")) + ".mp4");
+        File outputFile = new File(workspace + "\\" + m3u8.getId() + CrawlerConfig.EXT);
         if (outputFile.exists()) outputFile.delete();
         mergeVideo(tempDir, outputFile);
         // 删除
         for (File file : tempDir.listFiles()) file.delete();
         tempDir.delete();
+        // 重命名文件
+        File newNameFile = new File(workspace + "\\" + filterBannedChar(video.getTitle()) + CrawlerConfig.EXT);
+        if (!outputFile.renameTo(newNameFile)) {
+            logger.error("{} rename to {} failed", outputFile, newNameFile);
+            return false;
+        }
         return true;
     }
 
@@ -454,26 +460,27 @@ public class VideoHandler {
             //此处代码是因为如果合并大视频文件会产生大量的日志缓存导致线程阻塞，最终合并失败，所以加两个线程处理日志的缓存，之后再调用waitFor方法，等待执行结果。
             Process finalProcess = process;
             new Thread(() -> {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
+                SequenceInputStream sis = new SequenceInputStream(finalProcess.getInputStream(), finalProcess.getErrorStream());
+                try (BufferedReader in = new BufferedReader(new InputStreamReader(sis))) {
                     String line = null;
                     while ((line = in.readLine()) != null) {
                         logger.debug("output:" + line);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-            new Thread(() -> {
-                try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
-                    String line = null;
-                    while ((line = err.readLine()) != null) {
-                        logger.error("err:" + line);
-                    }
-                } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
             }).start();
+
+//            new Thread(() -> {
+//                try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
+//                    String line = null;
+//                    while ((line = err.readLine()) != null) {
+//                        logger.error("err:" + line);
+//                    }
+//                } catch (IOException e) {
+//                    logger.error(e.getMessage(), e);
+//                }
+//            }).start();
             // 等待命令子线程执行完成
             finalProcess.waitFor();
         } catch (Exception e) {

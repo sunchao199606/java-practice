@@ -17,7 +17,7 @@ public class Cef {
     private static final Logger logger = LoggerFactory.getLogger(Cef.class);
 
     @Test
-    public void main(String[] args) {
+    public void main() {
         JFrame jFrame = new JFrame();
         CefApp cefApp = CefApp.getInstance();
         CefClient cefClient = cefApp.createClient();

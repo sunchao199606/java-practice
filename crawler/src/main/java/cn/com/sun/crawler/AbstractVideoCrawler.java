@@ -65,7 +65,7 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
         };
         // 无限任务队列
         BlockingQueue<Runnable> linkedBlockingQueue = new LinkedBlockingQueue<>(Integer.MAX_VALUE);
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(8, Integer.MAX_VALUE, 5, TimeUnit.MINUTES,
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(16, Integer.MAX_VALUE, 5, TimeUnit.MINUTES,
                 linkedBlockingQueue, threadFactory);
         AtomicInteger succeeded = new AtomicInteger(0);
         AtomicInteger failed = new AtomicInteger(0);
@@ -97,7 +97,7 @@ public abstract class AbstractVideoCrawler implements VideoCrawler {
                 }
             }
         });
-        downloadMonitor.setName("DownloadMonitor");
+        downloadMonitor.setName("download-monitor");
         downloadMonitor.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             copyRecordFile();

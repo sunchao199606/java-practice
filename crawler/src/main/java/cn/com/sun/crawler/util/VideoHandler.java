@@ -458,7 +458,7 @@ public class VideoHandler {
             process = Runtime.getRuntime().exec(command);
             //此处代码是因为如果合并大视频文件会产生大量的日志缓存导致线程阻塞，最终合并失败，所以加两个线程处理日志的缓存，之后再调用waitFor方法，等待执行结果。
             Process finalProcess = process;
-            new Thread(() -> {
+            Thread outputThread = new Thread(() -> {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
                     String line = null;
                     while ((line = in.readLine()) != null) {
@@ -467,9 +467,11 @@ public class VideoHandler {
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
-            }).start();
+            });
+            outputThread.setName("ffmpeg-output-tracker");
+            outputThread.start();
 
-            new Thread(() -> {
+            Thread errThread = new Thread(() -> {
                 try (BufferedReader err = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
                     String line = null;
                     while ((line = err.readLine()) != null) {
@@ -478,7 +480,9 @@ public class VideoHandler {
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                 }
-            }).start();
+            });
+            errThread.setName("ffmpeg-err-tracker");
+            errThread.start();
             // 等待命令子线程执行完成
             finalProcess.waitFor();
         } catch (Exception e) {

@@ -86,7 +86,11 @@ public class HttpClient {
     public static String getHtmlByHttpClient(String url) {
         String html = "";
         //发送Get请求
-        HttpGet request = createHttpGetRequest(url);
+        boolean useCookie = false;
+        if (null != CrawlerConfig.useCookieUrl && url.contains(CrawlerConfig.useCookieUrl)) {
+            useCookie = true;
+        }
+        HttpGet request = createHttpGetRequest(url, useCookie);
         logger.info("begin request : {}", url);
         for (int tryCount = 1; tryCount <= CrawlerConfig.REQUEST_RETRY_COUNT; tryCount++) {
             logger.info("try count：" + tryCount);
@@ -163,7 +167,11 @@ public class HttpClient {
         return true;
     }
 
-    private static HttpGet createHttpGetRequest(String urlStr) {
+    private static HttpGet createHttpGetRequest(String url) {
+        return createHttpGetRequest(url, false);
+    }
+
+    private static HttpGet createHttpGetRequest(String urlStr, boolean useCookie) {
         HttpGet request = new HttpGet(urlStr);
         request.setConfig(requestConfig);
         request.setHeader("Host", request.getURI().getHost());
@@ -173,6 +181,9 @@ public class HttpClient {
         request.setHeader("X-Forwarded-For", randomIp());
         request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
                 "Chrome/84.0.4147.89 Safari/537.36");
+        if (useCookie) {
+            request.setHeader("Cookie", CrawlerConfig.COOKIE);
+        }
         return request;
     }
 

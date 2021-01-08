@@ -17,7 +17,10 @@ public class CrawlerConfig {
     public static final String HTTP_PROXY_HOSTNAME = "localhost";
     public static final String FILE_SAVE_PATH = "F://Download//crawler//";
     public static final String AUTHOR_PATH = "F://Download//crawler//author//";
+    public static final String KEYWORD_PATH = "F://Download//crawler//keyword//";
     public static final File JSON = new File(FILE_SAVE_PATH + "crawler.json");
+    public static final String KEYWORD_URL = "/search_result.php";
+    public static final String COOKIE = "91username=56e8%2BDYM%2FYdXHhTNTkRHahq%2BWxo5AEKaMaGNIzqiL9SqOyQUsBP2; DUID=cdf0bDj04LRlax%2B38Kzim5CQX8LUpnIpKhN2hIi%2Fj%2Bh9uC5m; USERNAME=c972Gg5lhXJZF%2FRC4BDrgXtBlAMoquD3%2B%2BPlzIvKdYQVubejBQGN; EMAILVERIFIED=yes; level=902b%2FCqzI5xp2YVbDmQk6C6KInSxfeJPVip4%2BgUJ;";
     public static final int CONNECT_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 5000;
     public static final int READ_FILE_TIMEOUT = 60000;
@@ -31,6 +34,7 @@ public class CrawlerConfig {
     public static final int HTTP_PROXY_PORT = 1080;
     private static final Logger logger = LoggerFactory.getLogger(CrawlerConfig.class);
     public static String domain;
+    public static String useCookieUrl;
     public static String homePage;
     public static String hot;
     public static String recentHighlight;
@@ -49,8 +53,10 @@ public class CrawlerConfig {
     public static String[] allMonthHot = new String[5];
     public static String[] topTenMonthStore = new String[10];
     public static String[] author = new String[3];
+    public static String[] keywords = new String[3];
     public static String authorName = "";
     public static File workspace;
+    public static String keyword = "";
 
     static {
         initPages();
@@ -104,12 +110,24 @@ public class CrawlerConfig {
                 logger.error(e.getMessage(), e);
             }
         }
+        if (!keyword.isEmpty()) {
+            useCookieUrl = domain + "/search_result.php";
+            try {
+                for (int i = 0; i < keywords.length; i++)
+                    //AUTHOR[i] = String.format("%s/search?keywords=%s&page=%s", DOMAIN, URLEncoder.encode(authorName, "UTF-8"), i + 1);
+                    keywords[i] = String.format("%s%s?search_id=%s&search_type=search_videos&sort=favorite&page=%s", domain, CrawlerConfig.KEYWORD_URL, URLEncoder.encode(keyword, "UTF-8"), i + 1);
+            } catch (UnsupportedEncodingException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     static void initWorkspace() {
         // 存储目录信息
         if (Arrays.stream(pages).allMatch(p -> p.contains("/author"))) {
             workspace = new File(CrawlerConfig.AUTHOR_PATH + CrawlerConfig.authorName);
+        } else if (Arrays.stream(pages).allMatch(p -> p.contains(CrawlerConfig.KEYWORD_URL))) {
+            workspace = new File(CrawlerConfig.KEYWORD_PATH + CrawlerConfig.keyword);
         } else {
             // 创建对应日期的文件夹
             String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);

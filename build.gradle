@@ -47,5 +47,6 @@ dependencies {
     compile group: 'org.apache.poi', name: 'poi', version: '4.0.0'
     // https://mvnrepository.com/artifact/io.netty/netty-all
     compile group: 'io.netty', name: 'netty-all', version: '4.1.54.Final'
-
+    // https://mvnrepository.com/artifact/com.eclipsesource.j2v8/j2v8_win32_x86_64
+    compile group: 'com.eclipsesource.j2v8', name: 'j2v8_win32_x86_64', version: '4.6.0'
 }

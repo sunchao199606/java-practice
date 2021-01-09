@@ -306,6 +306,10 @@ public class VideoHandler {
     public boolean downloadFromM3U8(Video video, File workspace) {
         AtomicBoolean success = new AtomicBoolean(true);
         M3U8 m3u8 = getM3U8ByUrl(video.getDownloadUrl());
+        // 为了兼容单个文件下载
+        if (video.getId().isEmpty()) {
+            video.setId("playvthumb_" + m3u8.getId());
+        }
         File tempDir = new File(workspace.getPath() + "//" + m3u8.getId());
         if (!tempDir.exists()) {
             tempDir.mkdirs();

@@ -2,11 +2,13 @@ package cn.com.sun.crawler;
 
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.impl.PornyCrawler;
+import cn.com.sun.crawler.util.FileAccessManager;
 import cn.com.sun.crawler.util.HttpClient;
 import cn.com.sun.crawler.util.VideoHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,7 +18,9 @@ import ws.schild.jave.info.MultimediaInfo;
 import ws.schild.jave.info.VideoSize;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,11 +46,17 @@ public class VideoHandlerRunner {
         handler = new VideoHandler();
     }
 
-    @ParameterizedTest()
-    @ValueSource(strings = {""})
-    public void m3u8(String url) {
-        File workspace = new File("F:\\Download\\crawler\\workspace");
-        //handler.downloadFromM3U8(url, workspace);
+    @Test
+    public void m3u8() {
+        File workspace = new File("F:\\Download\\crawler\\2021-01-09");
+        Video video = new Video();
+        video.setDownloadUrl("");
+        video.setTitle("");
+        Date now = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        video.setDate(format.format(now));
+        handler.downloadFromM3U8(video, workspace);
+        FileAccessManager.getInstance().write(video);
     }
 
     @ParameterizedTest()

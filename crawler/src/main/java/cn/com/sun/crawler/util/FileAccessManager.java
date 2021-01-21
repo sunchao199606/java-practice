@@ -95,7 +95,7 @@ public class FileAccessManager {
                 String json = mapper.writeValueAsString(video);
                 bw.write(json + "\n");
                 bw.flush();
-                logger.info("write json file:{}", video.getTitle());
+                logger.info("write json file:{}", json);
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }

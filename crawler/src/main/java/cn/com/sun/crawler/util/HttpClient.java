@@ -87,7 +87,7 @@ public class HttpClient {
         String html = "";
         //发送Get请求
         boolean useCookie = false;
-        if (null != CrawlerConfig.useCookieUrl && url.contains(CrawlerConfig.useCookieUrl)) {
+        if (null != CrawlerConfig.useCookieUrl && url.contains(CrawlerConfig.useCookieUrl) && "parseVideoBaseInfo".equals(CrawlerConfig.stage)) {
             useCookie = true;
         }
         HttpGet request = createHttpGetRequest(url, useCookie);

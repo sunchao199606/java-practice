@@ -20,6 +20,7 @@ public class CrawlerConfig {
     public static final String KEYWORD_PATH = "F://Download//crawler//keyword//";
     public static final File JSON = new File(FILE_SAVE_PATH + "crawler.json");
     public static final String KEYWORD_URL = "/search_result.php";
+    //__cfduid=da2d24a1298789d9a151168cb3efaba2a1611119632; CLIPSHARE=5f6vnld23jeg0tnduk98s64id3;
     public static final String COOKIE = "91username=56e8%2BDYM%2FYdXHhTNTkRHahq%2BWxo5AEKaMaGNIzqiL9SqOyQUsBP2; DUID=cdf0bDj04LRlax%2B38Kzim5CQX8LUpnIpKhN2hIi%2Fj%2Bh9uC5m; USERNAME=c972Gg5lhXJZF%2FRC4BDrgXtBlAMoquD3%2B%2BPlzIvKdYQVubejBQGN; EMAILVERIFIED=yes; level=902b%2FCqzI5xp2YVbDmQk6C6KInSxfeJPVip4%2BgUJ;";
     public static final int CONNECT_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 5000;
@@ -33,6 +34,7 @@ public class CrawlerConfig {
      */
     public static final int HTTP_PROXY_PORT = 1080;
     private static final Logger logger = LoggerFactory.getLogger(CrawlerConfig.class);
+    public static String stage = "parseVideoBaseInfo";
     public static String domain;
     public static String useCookieUrl;
     public static String homePage;

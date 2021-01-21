@@ -64,6 +64,7 @@ public class PornCrawler extends AbstractVideoCrawler {
 
     @Override
     public VideoCrawler parseVideoExtInfo() {
+        CrawlerConfig.stage = "parseVideoExtInfo";
         for (Video video : videoList) {
             String pageHtml = HttpClient.getHtmlByHttpClient(video.getHref());
             Document document = Jsoup.parse(pageHtml);

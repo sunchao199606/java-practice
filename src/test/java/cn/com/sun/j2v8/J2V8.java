@@ -131,6 +131,11 @@ public class J2V8 {
         String result = executor.getResult();
     }
 
+    /**
+     * 性能测试
+     *
+     * @throws ScriptException
+     */
     @Test
     public void performance() throws ScriptException {
         int num = 1000000000;

@@ -47,7 +47,10 @@ public class PornCrawler extends AbstractVideoCrawler {
             // href
             video.setHref(a.attr("href"));
             // title
-            video.setTitle(a.select(".video-title").first().text());
+            String originTitle = a.select(".video-title").first().text();
+            // 去除[原创] 字样
+            String title = originTitle.replaceAll("\\[原创\\] ?", "");
+            video.setTitle(title);
             videoList.add(video);
         }
         return videoList;
@@ -95,7 +98,7 @@ public class PornCrawler extends AbstractVideoCrawler {
             String href = document.select(".title-yakov").last().select("a").first().attr("href");
             video.setUid(href.substring(href.indexOf("?UID=") + 5));
             // date
-            video.setDate(document.select(".title-yakov").get(1).text());
+            video.setDate(document.select(".title-yakov").get(0).text());
             // shareUrl
             if (document.selectFirst("#linkForm2 #fm-video_link") == null) {
                 logger.info("get video {} shareUrl failed", video);
@@ -140,6 +143,19 @@ public class PornCrawler extends AbstractVideoCrawler {
         if (CefApp.getState() == CefApp.CefAppState.INITIALIZED) {
             getBrowser().destroy();
         }
+        // 过滤下重复的url
+        List<Integer> repeatList = new ArrayList<>();
+        for (int index = 0; index < downloadList.size(); index++) {
+            if (index > 0) {
+                Video video = downloadList.get(index);
+                List<Video> subList = downloadList.subList(0, index);
+                if (subList.stream().map(Video::getDownloadUrl).anyMatch(url -> url.equals(video.getDownloadUrl()))) {
+                    logger.warn("delete second video cause url repeat", video.getDownloadUrl());
+                    repeatList.add(index);
+                }
+            }
+        }
+        repeatList.stream().forEach(index -> downloadList.remove(index.intValue()));
         return this;
     }
 
@@ -210,7 +226,7 @@ public class PornCrawler extends AbstractVideoCrawler {
             CountDownLatch latch = new CountDownLatch(1);
             countDownLatch.set(latch);
             try {
-                latch.await(60, TimeUnit.SECONDS);
+                latch.await(120, TimeUnit.SECONDS);
                 logger.info("browser load {} end", url);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);

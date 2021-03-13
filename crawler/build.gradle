@@ -30,6 +30,6 @@ dependencies {
     compile fileTree(dir: 'libs', includes: ['*jar'])
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.0'
-
-
+    // selenium
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.141.59'
 }

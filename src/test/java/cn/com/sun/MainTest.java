@@ -10,6 +10,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -107,4 +109,60 @@ public class MainTest {
         System.out.println(r);
     }
 
+    @Test
+    public void testVersion() {
+        Version version = new Version("1.6.0");
+        System.out.println(".jar".compareTo("202104032208") > 0);
+    }
+
+    @Test
+    public void testVersionPattern() throws Exception {
+        Pattern pattern = Pattern.compile("(.+)_(\\d+\\.\\d+(\\.\\d+(\\.[^.]+)?)?)\\.jar");
+        // org.apache.xmlgraphics_2.3.0.202104032208.jar
+        String name = "org.eclipse.core.resources.win32.x86_3.5.200.v20170516-0925.jar";
+        Matcher m = pattern.matcher(name);
+        // ignore other files
+        if (!m.matches()) {
+            throw new Exception("");
+        }
+        String id = m.group(1);
+        String version = m.group(2);
+        for (int i = 0; i < m.groupCount(); i++) {
+            System.out.println(m.group(i));
+        }
+        System.out.println("id : " + id);
+        System.out.println("version : " + version);
+    }
+
+}
+
+class Version {
+    public int major, minor, service;
+
+    public String stamp = "";
+
+    public Version(String str) {
+        // parse major
+        int majorDot = str.indexOf('.');
+        if (majorDot < 0) {
+            major = Integer.parseInt(str);
+            return;
+        }
+        major = Integer.parseInt(str.substring(0, majorDot));
+        // parse minor
+        int minorDot = str.indexOf('.', majorDot + 1);
+        if (minorDot < 0) {
+            minor = Integer.parseInt(str.substring(majorDot + 1));
+            return;
+        }
+        minor = Integer.parseInt(str.substring(majorDot + 1, minorDot));
+        // parse service
+        int serviceDot = str.indexOf('.', minorDot + 1);
+        if (serviceDot < 0) {
+            service = Integer.parseInt(str.substring(minorDot + 1));
+            return;
+        }
+        service = Integer.parseInt(str.substring(minorDot + 1, serviceDot));
+        stamp = str.substring(serviceDot + 1);
+    }
 }

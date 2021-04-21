@@ -3,6 +3,7 @@ package cn.com.sun.javaApi;
 
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.time.Duration;
 
 /**
@@ -28,5 +29,24 @@ public class MainTest {
         int i = 100;
         //float af = Math.round(f * 100) / 100f;
         System.out.println(f * i);
+    }
+
+    private boolean fun() {
+        boolean connected = true;
+        try {
+            URI uri = new URI("");
+            if (uri != null) {
+                throw new Exception();
+            }
+        } catch (Exception exception) {
+            connected = false;
+            exception.printStackTrace();
+        }
+        return connected;
+    }
+
+    @Test
+    public void testReturn() {
+        System.out.println(fun());
     }
 }

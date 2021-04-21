@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 public class CrawlerConfig {
     public static final String EXT = ".mp4";
+    public static final String WEB_DRIVER_PATH = "C://Program Files//Google//Chrome//Application//chrome.exe";
     public static final String HTTP_PROXY_HOSTNAME = "localhost";
     public static final String FILE_SAVE_PATH = "F://Download//crawler//";
     public static final String AUTHOR_PATH = "F://Download//crawler//author//";
@@ -21,7 +22,7 @@ public class CrawlerConfig {
     public static final File JSON = new File(FILE_SAVE_PATH + "crawler.json");
     public static final String KEYWORD_URL = "/search_result.php";
     //__cfduid=da2d24a1298789d9a151168cb3efaba2a1611119632; CLIPSHARE=5f6vnld23jeg0tnduk98s64id3;
-    public static final String COOKIE = "91username=56e8%2BDYM%2FYdXHhTNTkRHahq%2BWxo5AEKaMaGNIzqiL9SqOyQUsBP2; DUID=cdf0bDj04LRlax%2B38Kzim5CQX8LUpnIpKhN2hIi%2Fj%2Bh9uC5m; USERNAME=c972Gg5lhXJZF%2FRC4BDrgXtBlAMoquD3%2B%2BPlzIvKdYQVubejBQGN; EMAILVERIFIED=yes; level=902b%2FCqzI5xp2YVbDmQk6C6KInSxfeJPVip4%2BgUJ;";
+    public static final String COOKIE = "__cfduid=da2d24a1298789d9a151168cb3efaba2a1611119632; CLIPSHARE=5f6vnld23jeg0tnduk98s64id3; 91username=56e8%2BDYM%2FYdXHhTNTkRHahq%2BWxo5AEKaMaGNIzqiL9SqOyQUsBP2; DUID=cdf0bDj04LRlax%2B38Kzim5CQX8LUpnIpKhN2hIi%2Fj%2Bh9uC5m; USERNAME=c972Gg5lhXJZF%2FRC4BDrgXtBlAMoquD3%2B%2BPlzIvKdYQVubejBQGN; EMAILVERIFIED=yes; level=902b%2FCqzI5xp2YVbDmQk6C6KInSxfeJPVip4%2BgUJ;";
     public static final int CONNECT_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 5000;
     public static final int READ_FILE_TIMEOUT = 60000;
@@ -58,7 +59,7 @@ public class CrawlerConfig {
     public static String[] keywords = new String[3];
     public static String authorName = "";
     public static File workspace;
-    public static String keyword = "";
+    public static String keyword = "美乳";
 
     static {
         initPages();
@@ -71,7 +72,7 @@ public class CrawlerConfig {
         if (crawler == PornCrawler.class) {
             //http://91.91p07.com
             //http://0728.91p50.com
-            domain = "http://91.91p07.com";
+            domain = "http://91porn.com";
             homePage = domain + "/index.php";
             hot = domain + "/v.php?category=hot&viewtype=basic";
             recentHighlight = domain + "/v.php?category=rf&viewtype=basic";
@@ -80,6 +81,7 @@ public class CrawlerConfig {
             monthDiscuss = domain + "/v.php?category=md&viewtype=basic";
             lastMonthHot = domain + "/v.php?category=top&m=-1&viewtype=basic";
             daily = new String[]{homePage, hot, recentHighlight, monthHot, monthStore, monthDiscuss, lastMonthHot};
+            /*homePage,*/
         } else if (crawler == PornyCrawler.class) {
             domain = "https://91porny.com";
             hot = domain + "/video/category/hot-list";

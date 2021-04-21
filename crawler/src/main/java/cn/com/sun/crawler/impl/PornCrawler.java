@@ -16,17 +16,26 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.openqa.selenium.support.ui.ExpectedConditions.attributeToBeNotEmpty;
 
 public class PornCrawler extends AbstractVideoCrawler {
 
@@ -111,38 +120,66 @@ public class PornCrawler extends AbstractVideoCrawler {
 
     @Override
     public VideoCrawler parseDownloadUrl() {
-        // 从分享链接里面取
-        for (Video video : videoList) {
-            String downloadUrl = "";
-            if (!video.getShareUrl().isEmpty()) {
-                downloadUrl = getDownloadUrl(video.getShareUrl());
+        // 1.从分享链接里面取 现已失效
+//        for (Video video : videoList) {
+//            String downloadUrl = "";
+//            if (!video.getShareUrl().isEmpty()) {
+//                downloadUrl = "";
+//                //downloadUrl = getDownloadUrl(video.getShareUrl());
+//            }
+//            if (downloadUrl.isEmpty()) {
+//                logger.warn("get {} download url from share url failed", video.getTitle());
+//                continue;
+//            }
+//            video.setDownloadUrl(downloadUrl);
+//            logger.info("get {} download url from share url: {}", video.getTitle(), video.getDownloadUrl());
+//            downloadList.add(video);
+//        }
+        // 2.从pageUrl里面取 使用cef不稳定
+//        for (Video video : videoList) {
+//            if (!video.getDownloadUrl().isEmpty()) continue;
+//            String downloadUrl = "";
+//            downloadUrl = getDownloadUrl(video.getHref());
+//            if (downloadUrl.isEmpty()) {
+//                logger.warn("get {} download url from page url failed", video.getTitle());
+//                logger.warn("get {} download url failed", video.getTitle());
+//                continue;
+//            }
+//            video.setDownloadUrl(downloadUrl);
+//            logger.info("get {} download url from page url: {}", video.getTitle(), video.getDownloadUrl());
+//            downloadList.add(video);
+//        }
+//        // 关闭浏览器
+//        if (CefApp.getState() == CefApp.CefAppState.INITIALIZED) {
+//            getBrowser().destroy();
+//        }
+        // 3.selenium获取pageUrl
+        if (videoList.size() > 0) {
+            WebDriver driver = getWebDriver();
+            WebDriverWait wait = new WebDriverWait(driver, 20);
+            for (Video video : videoList) {
+                String downloadUrl;
+                driver.get(video.getHref());
+                WebElement sourceElement = driver.findElement(By.ByTagName.tagName("source"));
+                try {
+                    wait.until(attributeToBeNotEmpty(sourceElement, "src"));
+                    downloadUrl = sourceElement.getAttribute("src");
+                } catch (Exception e) {
+                    downloadUrl = "";
+                    logger.warn(e.getMessage());
+                }
+                if (downloadUrl.isEmpty()) {
+                    logger.warn("get {} download url from page url failed", video.getTitle());
+                    continue;
+                }
+                video.setDownloadUrl(downloadUrl);
+                logger.info("get {} download url from page url: {}", video.getTitle(), video.getDownloadUrl());
+                downloadList.add(video);
             }
-            if (downloadUrl.isEmpty()) {
-                logger.warn("get {} download url from share url failed", video.getTitle());
-                continue;
-            }
-            video.setDownloadUrl(downloadUrl);
-            logger.info("get {} download url from share url: {}", video.getTitle(), video.getDownloadUrl());
-            downloadList.add(video);
+            // 关闭driver
+            driver.quit();
         }
-        // 从pageUrl里面取
-        for (Video video : videoList) {
-            if (!video.getDownloadUrl().isEmpty()) continue;
-            String downloadUrl = "";
-            downloadUrl = getDownloadUrl(video.getHref());
-            if (downloadUrl.isEmpty()) {
-                logger.warn("get {} download url from page url failed", video.getTitle());
-                logger.warn("get {} download url failed", video.getTitle());
-                continue;
-            }
-            video.setDownloadUrl(downloadUrl);
-            logger.info("get {} download url from page url: {}", video.getTitle(), video.getDownloadUrl());
-            downloadList.add(video);
-        }
-        // 关闭浏览器
-        if (CefApp.getState() == CefApp.CefAppState.INITIALIZED) {
-            getBrowser().destroy();
-        }
+
         // 过滤下重复的url
         List<Integer> repeatList = new ArrayList<>();
         for (int index = 0; index < downloadList.size(); index++) {
@@ -159,9 +196,17 @@ public class PornCrawler extends AbstractVideoCrawler {
         return this;
     }
 
+    private WebDriver getWebDriver() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-blink-features=AutomationControlled");
+        options.addArguments("--headless");
+        options.setBinary(new File(CrawlerConfig.WEB_DRIVER_PATH));
+        return new ChromeDriver(options);
+    }
+
     private String getDownloadUrl(String url) {
         String downloadUrl = "";
-        String html = getBrowser().getHtml(url);
+        String html = getCefBrowser().getHtml(url);
         Element document = Jsoup.parse(html);
         if (document.selectFirst("source") != null) {
             downloadUrl = document.selectFirst("source").attr("src");
@@ -169,7 +214,9 @@ public class PornCrawler extends AbstractVideoCrawler {
         return downloadUrl;
     }
 
-    private Browser getBrowser() {
+    //
+
+    private Browser getCefBrowser() {
         if (browser == null) {
             browser = new Browser();
             try {

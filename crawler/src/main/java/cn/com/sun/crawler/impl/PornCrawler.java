@@ -159,9 +159,9 @@ public class PornCrawler extends AbstractVideoCrawler {
             WebDriverWait wait = new WebDriverWait(driver, 20);
             for (Video video : videoList) {
                 String downloadUrl;
-                driver.get(video.getHref());
-                WebElement sourceElement = driver.findElement(By.ByTagName.tagName("source"));
                 try {
+                    driver.get(video.getHref());
+                    WebElement sourceElement = driver.findElement(By.ByTagName.tagName("source"));
                     wait.until(attributeToBeNotEmpty(sourceElement, "src"));
                     downloadUrl = sourceElement.getAttribute("src");
                 } catch (Exception e) {

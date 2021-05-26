@@ -368,6 +368,14 @@ public class VideoHandler {
         tempDir.delete();
         // 重命名文件
         File newNameFile = new File(workspace + File.separator + filterBannedChar(video.getTitle()) + CrawlerConfig.EXT);
+        if (newNameFile.exists()) {
+            logger.info("{} exists and delete it", newNameFile);
+            if (newNameFile.delete()) {
+                logger.info("delete {} success", newNameFile);
+            } else {
+                logger.warn("delete {} failed", newNameFile);
+            }
+        }
         if (!outputFile.renameTo(newNameFile)) {
             logger.error("{} rename to {} failed", outputFile, newNameFile);
             return false;

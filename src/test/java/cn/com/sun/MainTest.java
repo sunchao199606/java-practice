@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -132,6 +133,37 @@ public class MainTest {
         }
         System.out.println("id : " + id);
         System.out.println("version : " + version);
+    }
+
+    private String convert(String s) {
+        BigDecimal bd = new BigDecimal(s);
+        String decimalString = s.substring(s.indexOf(".") + 1);
+        if (decimalString.matches("0+")) {
+            if (decimalString.length() > 2)
+                return bd.setScale(2).toPlainString();
+            else
+                return s;
+        }
+        return bd.stripTrailingZeros().toPlainString();
+    }
+
+    @Test
+    public void testConvertString() {
+        System.out.println(convert("1.01"));
+    }
+
+    @Test
+    public void testAutoBox() {
+        boxMethod(false);
+        boxMethod(false);
+    }
+
+    private void boxMethod(Boolean yes) {
+        System.out.println("box" + yes);
+    }
+
+    private void boxMethod(boolean yes) {
+        System.out.println(yes);
     }
 
 }

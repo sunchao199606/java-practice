@@ -59,7 +59,7 @@ public class CrawlerConfig {
     public static String[] keywords = new String[3];
     public static String authorName = "";
     public static File workspace;
-    public static String keyword = "美乳";
+    public static String keyword = "";
 
     static {
         initPages();

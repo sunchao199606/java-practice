@@ -35,13 +35,13 @@ dependencies {
     api group: 'org.apache.mina', name: 'mina-core', version: '2.0.7'
 
     // Use JUnit test framework
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'
+    api 'org.junit.jupiter:junit-jupiter:5.6.0'
     // https://mvnrepository.com/artifact/org.eclipse.swt/org.eclipse.swt.win32.win32.x86
-    testImplementation group: 'org.eclipse.swt', name: 'org.eclipse.swt.win32.win32.x86', version: '4.3'
+    api group: 'org.eclipse.swt', name: 'org.eclipse.swt.win32.win32.x86', version: '4.3'
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna
-    testImplementation group: 'net.java.dev.jna', name: 'jna', version: '5.4.0'
+    api group: 'net.java.dev.jna', name: 'jna', version: '5.4.0'
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    testImplementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.4.0'
+    api group: 'net.java.dev.jna', name: 'jna-platform', version: '5.4.0'
 
     // https://mvnrepository.com/artifact/org.apache.poi/poi
     api group: 'org.apache.poi', name: 'poi', version: '4.0.0'

@@ -23,6 +23,12 @@ import java.util.stream.IntStream;
  */
 public class MainTest {
     @Test
+    public void stringTest(){
+        String A = "abc";
+        String B = "abc";
+        System.out.println(A == B);
+    }
+    @Test
     public void testForEach() {
         List<Integer> list = IntStream.rangeClosed(1, 100).boxed().collect(Collectors.toList());
         for (Integer i : list) {

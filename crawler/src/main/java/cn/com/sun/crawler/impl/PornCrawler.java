@@ -17,6 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -29,6 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -121,60 +123,34 @@ public class PornCrawler extends AbstractVideoCrawler {
     @Override
     public VideoCrawler parseDownloadUrl() {
         // 1.从分享链接里面取 现已失效
-//        for (Video video : videoList) {
-//            String downloadUrl = "";
-//            if (!video.getShareUrl().isEmpty()) {
-//                downloadUrl = "";
-//                //downloadUrl = getDownloadUrl(video.getShareUrl());
-//            }
-//            if (downloadUrl.isEmpty()) {
-//                logger.warn("get {} download url from share url failed", video.getTitle());
-//                continue;
-//            }
-//            video.setDownloadUrl(downloadUrl);
-//            logger.info("get {} download url from share url: {}", video.getTitle(), video.getDownloadUrl());
-//            downloadList.add(video);
-//        }
-        // 2.从pageUrl里面取 使用cef不稳定
-//        for (Video video : videoList) {
-//            if (!video.getDownloadUrl().isEmpty()) continue;
-//            String downloadUrl = "";
-//            downloadUrl = getDownloadUrl(video.getHref());
-//            if (downloadUrl.isEmpty()) {
-//                logger.warn("get {} download url from page url failed", video.getTitle());
-//                logger.warn("get {} download url failed", video.getTitle());
-//                continue;
-//            }
-//            video.setDownloadUrl(downloadUrl);
-//            logger.info("get {} download url from page url: {}", video.getTitle(), video.getDownloadUrl());
-//            downloadList.add(video);
-//        }
-//        // 关闭浏览器
-//        if (CefApp.getState() == CefApp.CefAppState.INITIALIZED) {
-//            getBrowser().destroy();
-//        }
-        // 3.selenium获取pageUrl
         if (videoList.size() > 0) {
             WebDriver driver = getWebDriver();
             WebDriverWait wait = new WebDriverWait(driver, 20);
             for (Video video : videoList) {
-                String downloadUrl;
-                try {
-                    driver.get(video.getHref());
-                    WebElement sourceElement = driver.findElement(By.ByTagName.tagName("source"));
-                    wait.until(attributeToBeNotEmpty(sourceElement, "src"));
-                    downloadUrl = sourceElement.getAttribute("src");
-                } catch (Exception e) {
-                    downloadUrl = "";
-                    logger.warn(e.getMessage());
+                String downloadUrl = "";
+                if (!video.getShareUrl().isEmpty()) {
+                    downloadUrl = getDownloadUrl(video.getShareUrl(), driver, wait);
+                }
+                if (downloadUrl.isEmpty()) {
+                    logger.warn("get {} download url from share url failed", video.getTitle());
+                } else {
+                    logger.info("get {} download url from share url: {}", video.getTitle(), video.getShareUrl());
+                    video.setDownloadUrl(downloadUrl);
+                    downloadList.add(video);
+                    continue;
+                }
+                // page url里面取
+                if (!video.getHref().isEmpty()) {
+                    downloadUrl = getDownloadUrl(video.getHref(), driver, wait);
                 }
                 if (downloadUrl.isEmpty()) {
                     logger.warn("get {} download url from page url failed", video.getTitle());
-                    continue;
+                    logger.warn("get {} download url failed", video.getTitle());
+                } else {
+                    logger.info("get {} download url from page url: {}", video.getTitle(), video.getHref());
+                    video.setDownloadUrl(downloadUrl);
+                    downloadList.add(video);
                 }
-                video.setDownloadUrl(downloadUrl);
-                logger.info("get {} download url from page url: {}", video.getTitle(), video.getDownloadUrl());
-                downloadList.add(video);
             }
             // 关闭driver
             driver.quit();
@@ -200,21 +176,37 @@ public class PornCrawler extends AbstractVideoCrawler {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.addArguments("--headless");
-        options.setBinary(new File(CrawlerConfig.WEB_DRIVER_PATH));
-        return new ChromeDriver(options);
+        options.setBinary(new File(CrawlerConfig.BROWSER_PATH));
+        // 增加一个 name = "name",value="value" 的 cookie
+        ChromeDriver driver = new ChromeDriver(options);
+        driver.get(CrawlerConfig.domain);
+        WebDriver.Options remoteWebDriverOptions = driver.manage();
+        Arrays.stream(CrawlerConfig.COOKIE.split(";")).forEach(c -> {
+            String[] entry = c.split("=");
+            Cookie cookie = new Cookie(entry[0], entry[1]);
+            try {
+                remoteWebDriverOptions.addCookie(cookie);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        });
+
+        return driver;
     }
 
-    private String getDownloadUrl(String url) {
-        String downloadUrl = "";
-        String html = getCefBrowser().getHtml(url);
-        Element document = Jsoup.parse(html);
-        if (document.selectFirst("source") != null) {
-            downloadUrl = document.selectFirst("source").attr("src");
+    private String getDownloadUrl(String url, WebDriver driver, WebDriverWait wait) {
+        String downloadUrl;
+        try {
+            driver.get(url);
+            WebElement sourceElement = driver.findElement(By.ByTagName.tagName("source"));
+            wait.until(attributeToBeNotEmpty(sourceElement, "src"));
+            downloadUrl = sourceElement.getAttribute("src");
+        } catch (Exception e) {
+            downloadUrl = "";
+            logger.warn(e.getMessage());
         }
         return downloadUrl;
     }
-
-    //
 
     private Browser getCefBrowser() {
         if (browser == null) {

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class CrawlerConfig {
     public static final String EXT = ".mp4";
-    public static final String WEB_DRIVER_PATH = "C://Program Files//Google//Chrome//Application//chrome.exe";
+    public static final String BROWSER_PATH = "C://Program Files//Google//Chrome//Application//chrome.exe";
     public static final String HTTP_PROXY_HOSTNAME = "localhost";
     public static final String FILE_SAVE_PATH = "F://Download//crawler//";
     public static final String AUTHOR_PATH = "F://Download//crawler//author//";
@@ -22,7 +22,8 @@ public class CrawlerConfig {
     public static final File JSON = new File(FILE_SAVE_PATH + "crawler.json");
     public static final String KEYWORD_URL = "/search_result.php";
     //__cfduid=da2d24a1298789d9a151168cb3efaba2a1611119632; CLIPSHARE=5f6vnld23jeg0tnduk98s64id3;
-    public static final String COOKIE = "__cfduid=da2d24a1298789d9a151168cb3efaba2a1611119632; CLIPSHARE=5f6vnld23jeg0tnduk98s64id3; 91username=56e8%2BDYM%2FYdXHhTNTkRHahq%2BWxo5AEKaMaGNIzqiL9SqOyQUsBP2; DUID=cdf0bDj04LRlax%2B38Kzim5CQX8LUpnIpKhN2hIi%2Fj%2Bh9uC5m; USERNAME=c972Gg5lhXJZF%2FRC4BDrgXtBlAMoquD3%2B%2BPlzIvKdYQVubejBQGN; EMAILVERIFIED=yes; level=902b%2FCqzI5xp2YVbDmQk6C6KInSxfeJPVip4%2BgUJ;";
+    // __utmz=50351329.1608039490.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); CLIPSHARE=rpaabtk6gcqgif0f6ov7ia4i9b; __utma=50351329.1142673181.1608039490.1629944937.1629953587.18; __utmb=50351329.0.10.1629953587; __utmc=50351329; 91username=9c4a7VQrwhfwvdvN4m6Y3TAKeiRW30dIpygVx9WGAVU2QAnug19p; DUID=a735khT6Vo%2FgX0Tca%2F48ermRadyAh04GIdWpS%2FOJz0FCj88h; USERNAME=f42bw0JzWqwobR3pccSZm21lw%2BG9OWmi35cCBdWOERm5n8fx4jjE; EMAILVERIFIED=yes; school=6ffadWWinIjUUwUQOG2bxJvQzJEULQtKY2qK%2Bxw; level=15a2Xvtxj1kgdBxQZ68%2FyCbFIKBSHR05Nc0oRkUT
+    public static final String COOKIE = "91username=9c4a7VQrwhfwvdvN4m6Y3TAKeiRW30dIpygVx9WGAVU2QAnug19p;";
     public static final int CONNECT_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 5000;
     public static final int READ_FILE_TIMEOUT = 60000;

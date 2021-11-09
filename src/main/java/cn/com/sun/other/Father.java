@@ -7,6 +7,14 @@ package cn.com.sun.other;
  */
 public class Father extends GrandFather {
 
+    public Father(Object arg) {
+        System.out.println("father arg");
+    }
+
+    public Father(){
+        System.out.println("father");
+    }
+
     @Override
     protected void call() {
         System.out.println("Father Called");

@@ -6,6 +6,9 @@ package cn.com.sun.other;
  * @description：Son
  */
 public class Son extends Father {
+    public Son(Object arg) {
+        System.out.println("son");
+    }
 
     @Override
     protected void call() {
@@ -14,7 +17,7 @@ public class Son extends Father {
 
 
     public static void main(String[] args) {
-        Son son = new Son();
+        Son son = new Son(null);
         son.call();
     }
 }

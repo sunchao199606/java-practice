@@ -10,6 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -163,6 +164,10 @@ public class MainTest {
         boxMethod(false);
         boxMethod(false);
     }
+    @Test
+    public void testUUid(){
+        System.out.println(UUID.randomUUID());
+    }
 
     private void boxMethod(Boolean yes) {
         System.out.println("box" + yes);
@@ -203,4 +208,6 @@ class Version {
         service = Integer.parseInt(str.substring(minorDot + 1, serviceDot));
         stamp = str.substring(serviceDot + 1);
     }
+
+
 }

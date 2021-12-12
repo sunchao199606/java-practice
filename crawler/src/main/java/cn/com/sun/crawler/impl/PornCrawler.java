@@ -6,44 +6,28 @@ import cn.com.sun.crawler.VideoCrawler;
 import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.util.HttpClient;
 import cn.com.sun.crawler.util.VideoHandler;
-import org.cef.CefApp;
-import org.cef.CefClient;
-import org.cef.OS;
-import org.cef.browser.CefBrowser;
-import org.cef.browser.CefFrame;
-import org.cef.handler.CefLoadHandlerAdapter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import static org.openqa.selenium.support.ui.ExpectedConditions.attributeToBeNotEmpty;
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 
 public class PornCrawler extends AbstractVideoCrawler {
 
     private static final Logger logger = LoggerFactory.getLogger(PornCrawler.class);
-    private static Browser browser;
-    private static CountDownLatch browserStarted = new CountDownLatch(1);
     private VideoHandler videoHandler = new VideoHandler();
 
     @Override
@@ -122,12 +106,12 @@ public class PornCrawler extends AbstractVideoCrawler {
 
     @Override
     public VideoCrawler parseDownloadUrl() {
-        // 1.从分享链接里面取 现已失效
         if (videoList.size() > 0) {
             WebDriver driver = getWebDriver();
             WebDriverWait wait = new WebDriverWait(driver, 20);
             for (Video video : videoList) {
                 String downloadUrl = "";
+                // 1.从分享链接里面取
                 if (!video.getShareUrl().isEmpty()) {
                     downloadUrl = getDownloadUrl(video.getShareUrl(), driver, wait);
                 }
@@ -139,7 +123,7 @@ public class PornCrawler extends AbstractVideoCrawler {
                     downloadList.add(video);
                     continue;
                 }
-                // page url里面取
+                // 2.page url里面取
                 if (!video.getHref().isEmpty()) {
                     downloadUrl = getDownloadUrl(video.getHref(), driver, wait);
                 }
@@ -174,11 +158,12 @@ public class PornCrawler extends AbstractVideoCrawler {
 
     private WebDriver getWebDriver() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.addArguments("--headless");
+//        options.addArguments("--disable-blink-features=AutomationControlled");
+//        options.addArguments("--headless");
         options.setBinary(new File(CrawlerConfig.BROWSER_PATH));
         // 增加一个 name = "name",value="value" 的 cookie
         ChromeDriver driver = new ChromeDriver(options);
+        driver.manage().window().setPosition(new Point(-1000,-1000));
         driver.get(CrawlerConfig.domain);
         WebDriver.Options remoteWebDriverOptions = driver.manage();
         Arrays.stream(CrawlerConfig.COOKIE.split(";")).forEach(c -> {
@@ -198,84 +183,13 @@ public class PornCrawler extends AbstractVideoCrawler {
         String downloadUrl;
         try {
             driver.get(url);
+            wait.until(presenceOfElementLocated(By.ByTagName.tagName("source")));
             WebElement sourceElement = driver.findElement(By.ByTagName.tagName("source"));
-            wait.until(attributeToBeNotEmpty(sourceElement, "src"));
             downloadUrl = sourceElement.getAttribute("src");
         } catch (Exception e) {
             downloadUrl = "";
             logger.warn(e.getMessage());
         }
         return downloadUrl;
-    }
-
-    private Browser getCefBrowser() {
-        if (browser == null) {
-            browser = new Browser();
-            try {
-                browserStarted.await();
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-        return browser;
-    }
-
-    private class Browser {
-        private CefBrowser browser;
-        private String currentHtml = "";
-        private JFrame jFrame;
-        private CefApp cefApp;
-        private AtomicReference<CountDownLatch> countDownLatch = new AtomicReference<>();
-
-        private Browser() {
-            jFrame = new JFrame();
-            cefApp = CefApp.getInstance();
-            CefClient cefClient = cefApp.createClient();
-            cefClient.addLoadHandler(new CefLoadHandlerAdapter() {
-                @Override
-                public void onLoadEnd(CefBrowser cefBrowser, CefFrame cefFrame, int i) {
-                    cefBrowser.getSource(html -> {
-                        if (browserStarted.getCount() > 0) {
-                            // 解除等待
-                            browserStarted.countDown();
-                            // 最小化窗口
-                            jFrame.setExtendedState(Frame.ICONIFIED);
-                            return;
-                        }
-                        currentHtml = html;
-                        countDownLatch.get().countDown();
-                    });
-                }
-            });
-            //
-            browser = cefClient.createBrowser("file:///D:/Program/workspace/IDEA/java/JavaDemo/crawler/src/main/resources/index.html", OS.isLinux(), false);
-            jFrame.getContentPane().add(browser.getUIComponent(), BorderLayout.CENTER);
-            jFrame.pack();
-            jFrame.setSize(500, 500);
-            jFrame.setResizable(false);
-            jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-            jFrame.setVisible(true);
-        }
-
-        public String getHtml(String url) {
-            // 初始化
-            currentHtml = "";
-            logger.info("browser loading {}", url);
-            browser.loadURL(url);
-            CountDownLatch latch = new CountDownLatch(1);
-            countDownLatch.set(latch);
-            try {
-                latch.await(120, TimeUnit.SECONDS);
-                logger.info("browser load {} end", url);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-            }
-            return currentHtml;
-        }
-
-        public void destroy() {
-            CefApp.getInstance().dispose();
-            jFrame.dispose();
-        }
     }
 }

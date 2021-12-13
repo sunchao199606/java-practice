@@ -118,7 +118,7 @@ public class PornCrawler extends AbstractVideoCrawler {
                 if (downloadUrl.isEmpty()) {
                     logger.warn("get {} download url from share url failed", video.getTitle());
                 } else {
-                    logger.info("get {} download url from share url: {}", video.getTitle(), video.getShareUrl());
+                    logger.info("get {} download url {} from share url: {}", video.getTitle(), downloadUrl, video.getShareUrl());
                     video.setDownloadUrl(downloadUrl);
                     downloadList.add(video);
                     continue;
@@ -131,7 +131,7 @@ public class PornCrawler extends AbstractVideoCrawler {
                     logger.warn("get {} download url from page url failed", video.getTitle());
                     logger.warn("get {} download url failed", video.getTitle());
                 } else {
-                    logger.info("get {} download url from page url: {}", video.getTitle(), video.getHref());
+                    logger.info("get {} download url {} from page url: {}", video.getTitle(), downloadUrl, video.getHref());
                     video.setDownloadUrl(downloadUrl);
                     downloadList.add(video);
                 }
@@ -163,7 +163,7 @@ public class PornCrawler extends AbstractVideoCrawler {
         options.setBinary(new File(CrawlerConfig.BROWSER_PATH));
         // 增加一个 name = "name",value="value" 的 cookie
         ChromeDriver driver = new ChromeDriver(options);
-        driver.manage().window().setPosition(new Point(-1000,-1000));
+        driver.manage().window().setPosition(new Point(-1000, -1000));
         driver.get(CrawlerConfig.domain);
         WebDriver.Options remoteWebDriverOptions = driver.manage();
         Arrays.stream(CrawlerConfig.COOKIE.split(";")).forEach(c -> {

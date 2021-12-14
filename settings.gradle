@@ -10,4 +10,5 @@
 rootProject.name = 'JavaDemo'
 include 'crawler'
 include 'jcef'
+include 'jetty-webcoket'
 

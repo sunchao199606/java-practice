@@ -108,7 +108,7 @@ public class PornCrawler extends AbstractVideoCrawler {
     public VideoCrawler parseDownloadUrl() {
         if (videoList.size() > 0) {
             WebDriver driver = getWebDriver();
-            WebDriverWait wait = new WebDriverWait(driver, 20);
+            WebDriverWait wait = new WebDriverWait(driver, 30);
             for (Video video : videoList) {
                 String downloadUrl = "";
                 // 1.从分享链接里面取

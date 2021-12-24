@@ -389,42 +389,39 @@ public class VideoHandler {
         return true;
     }
 
-    private M3U8 getM3U8ByUrl(String m3u8Url) {
-        try {
-            HttpURLConnection conn = (HttpURLConnection) new URL(m3u8Url).openConnection();
-            if (conn.getResponseCode() == 200) {
-                String realUrl = conn.getURL().toString();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String basePath = realUrl.substring(0, realUrl.lastIndexOf(".m3u8?") - 6);
-                M3U8 m3U8 = new M3U8();
-                m3U8.setBasePath(basePath);
-                m3U8.setId(basePath.substring(basePath.length() - 7, basePath.length() - 1));
-                String line;
-                float seconds = 0;
-                while ((line = reader.readLine()) != null) {
-                    if (line.startsWith("#")) {
-                        if (line.startsWith("#EXTINF:")) {
-                            int start = line.indexOf(":");
-                            line = line.substring(start + 1, line.length() - 1);
-                            try {
-                                seconds = Float.parseFloat(line);
-                            } catch (Exception e) {
-                                seconds = 0;
-                            }
+    private M3U8 getM3U8ByUrl(String m3u8Url) throws Exception {
+        m3u8Url = m3u8Url.replace("cdn.workgreat14.live","la.killcovid2021.com");
+        HttpURLConnection conn = (HttpURLConnection) new URL(m3u8Url).openConnection();
+        if (conn.getResponseCode() == 200) {
+            String realUrl = conn.getURL().toString();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String basePath = realUrl.substring(0, realUrl.lastIndexOf(".m3u8?") - 6);
+            M3U8 m3U8 = new M3U8();
+            m3U8.setBasePath(basePath);
+            m3U8.setId(basePath.substring(basePath.length() - 7, basePath.length() - 1));
+            String line;
+            float seconds = 0;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("#")) {
+                    if (line.startsWith("#EXTINF:")) {
+                        int start = line.indexOf(":");
+                        line = line.substring(start + 1, line.length() - 1);
+                        try {
+                            seconds = Float.parseFloat(line);
+                        } catch (Exception e) {
+                            seconds = 0;
                         }
-                        continue;
                     }
-                    if (line.endsWith("m3u8")) {
-                        return getM3U8ByUrl(basePath + line);
-                    }
-                    m3U8.addTs(new M3U8.Ts(line, seconds));
-                    seconds = 0;
+                    continue;
                 }
-                reader.close();
-                return m3U8;
+                if (line.endsWith("m3u8")) {
+                    return getM3U8ByUrl(basePath + line);
+                }
+                m3U8.addTs(new M3U8.Ts(line, seconds));
+                seconds = 0;
             }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            reader.close();
+            return m3U8;
         }
         return null;
     }

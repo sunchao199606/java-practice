@@ -118,7 +118,7 @@ public class PornCrawler extends AbstractVideoCrawler {
                 if (downloadUrl.isEmpty()) {
                     logger.warn("get {} download url from share url failed", video.getTitle());
                 } else {
-                    logger.info("get {} download url {} from share url: {}", video.getTitle(), downloadUrl, video.getShareUrl());
+                    logger.info("get {} download url from share url: {}", video.getTitle(), video.getShareUrl());
                     video.setDownloadUrl(downloadUrl);
                     downloadList.add(video);
                     continue;
@@ -131,7 +131,7 @@ public class PornCrawler extends AbstractVideoCrawler {
                     logger.warn("get {} download url from page url failed", video.getTitle());
                     logger.warn("get {} download url failed", video.getTitle());
                 } else {
-                    logger.info("get {} download url {} from page url: {}", video.getTitle(), downloadUrl, video.getHref());
+                    logger.info("get {} download url from page url: {}", video.getTitle(), video.getHref());
                     video.setDownloadUrl(downloadUrl);
                     downloadList.add(video);
                 }

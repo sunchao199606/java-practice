@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -168,6 +169,12 @@ public class MainTest {
     public void testUUid(){
         System.out.println(UUID.randomUUID());
     }
+
+    @Test
+    public void testRuntime() throws IOException {
+        Runtime.getRuntime().exec("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe http://jd.com");
+    }
+
 
     private void boxMethod(Boolean yes) {
         System.out.println("box" + yes);

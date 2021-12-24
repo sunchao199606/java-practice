@@ -18,19 +18,6 @@
 
 package org.eclipse.jetty.websocket.tests.client;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.DispatcherType;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -46,40 +33,36 @@ import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.io.FutureWriteCallback;
 import org.eclipse.jetty.websocket.server.NativeWebSocketServletContainerInitializer;
 import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
-import org.eclipse.jetty.websocket.tests.AnnoMaxMessageEndpoint;
-import org.eclipse.jetty.websocket.tests.CloseTrackingEndpoint;
-import org.eclipse.jetty.websocket.tests.ConnectMessageEndpoint;
-import org.eclipse.jetty.websocket.tests.EchoSocket;
-import org.eclipse.jetty.websocket.tests.ParamsEndpoint;
+import org.eclipse.jetty.websocket.tests.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import javax.servlet.DispatcherType;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-public class WebSocketClientTest
-{
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+public class WebSocketClientTest {
     private Server server;
     private WebSocketClient client;
 
     @BeforeEach
-    public void startClient() throws Exception
-    {
+    public void startClient() throws Exception {
         client = new WebSocketClient();
         client.start();
     }
 
     @BeforeEach
-    public void startServer() throws Exception
-    {
+    public void startServer() throws Exception {
         server = new Server();
 
         ServerConnector connector = new ServerConnector(server);
@@ -90,19 +73,19 @@ public class WebSocketClientTest
         context.setContextPath("/");
 
         NativeWebSocketServletContainerInitializer.configure(context,
-            (servletContext, configuration) ->
-            {
-                configuration.getPolicy().setIdleTimeout(10000);
-                configuration.addMapping("/echo", (req, resp) ->
+                (servletContext, configuration) ->
                 {
-                    if (req.hasSubProtocol("echo"))
-                        resp.setAcceptedSubProtocol("echo");
-                    return new EchoSocket();
+                    configuration.getPolicy().setIdleTimeout(10000);
+                    configuration.addMapping("/echo", (req, resp) ->
+                    {
+                        if (req.hasSubProtocol("echo"))
+                            resp.setAcceptedSubProtocol("echo");
+                        return new EchoSocket();
+                    });
+                    configuration.addMapping("/anno-max-message", (req, resp) -> new AnnoMaxMessageEndpoint());
+                    configuration.addMapping("/connect-msg", (req, resp) -> new ConnectMessageEndpoint());
+                    configuration.addMapping("/get-params", (req, resp) -> new ParamsEndpoint());
                 });
-                configuration.addMapping("/anno-max-message", (req, resp) -> new AnnoMaxMessageEndpoint());
-                configuration.addMapping("/connect-msg", (req, resp) -> new ConnectMessageEndpoint());
-                configuration.addMapping("/get-params", (req, resp) -> new ParamsEndpoint());
-            });
 
         context.addFilter(WebSocketUpgradeFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 
@@ -112,20 +95,17 @@ public class WebSocketClientTest
     }
 
     @AfterEach
-    public void stopClient() throws Exception
-    {
+    public void stopClient() throws Exception {
         client.stop();
     }
 
     @AfterEach
-    public void stopServer() throws Exception
-    {
+    public void stopServer() throws Exception {
         server.stop();
     }
 
     @Test
-    public void testAddExtensionNotInstalled() throws Exception
-    {
+    public void testAddExtensionNotInstalled() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -134,17 +114,13 @@ public class WebSocketClientTest
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("echo");
         request.addExtensions("x-bad");
+        // Should trigger failure on bad extension
+        client.connect(cliSock, wsUri, request);
 
-        assertThrows(IllegalArgumentException.class, () ->
-        {
-            // Should trigger failure on bad extension
-            client.connect(cliSock, wsUri, request);
-        });
     }
 
     @Test
-    public void testBasicEchoFromClient() throws Exception
-    {
+    public void testBasicEchoFromClient() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -154,8 +130,7 @@ public class WebSocketClientTest
         request.setSubProtocols("echo");
         Future<Session> future = client.connect(cliSock, wsUri, request);
 
-        try (Session sess = future.get(30, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(30, TimeUnit.SECONDS)) {
             assertThat("Session", sess, notNullValue());
             assertThat("Session.open", sess.isOpen(), is(true));
             assertThat("Session.upgradeRequest", sess.getUpgradeRequest(), notNullValue());
@@ -174,8 +149,7 @@ public class WebSocketClientTest
     }
 
     @Test
-    public void testBasicEchoPartialUsageFromClient() throws Exception
-    {
+    public void testBasicEchoPartialUsageFromClient() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -185,8 +159,7 @@ public class WebSocketClientTest
         request.setSubProtocols("echo");
         Future<Session> future = client.connect(cliSock, wsUri, request);
 
-        try (Session sess = future.get(30, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(30, TimeUnit.SECONDS)) {
             assertThat("Session", sess, notNullValue());
             assertThat("Session.open", sess.isOpen(), is(true));
             assertThat("Session.upgradeRequest", sess.getUpgradeRequest(), notNullValue());
@@ -207,8 +180,7 @@ public class WebSocketClientTest
     }
 
     @Test
-    public void testBasicEchoPartialTextWithPartialBinaryFromClient() throws Exception
-    {
+    public void testBasicEchoPartialTextWithPartialBinaryFromClient() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -218,8 +190,7 @@ public class WebSocketClientTest
         request.setSubProtocols("echo");
         Future<Session> future = client.connect(cliSock, wsUri, request);
 
-        try (Session sess = future.get(30, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(30, TimeUnit.SECONDS)) {
             assertThat("Session", sess, notNullValue());
             assertThat("Session.open", sess.isOpen(), is(true));
             assertThat("Session.upgradeRequest", sess.getUpgradeRequest(), notNullValue());
@@ -234,9 +205,9 @@ public class WebSocketClientTest
             remote.sendPartialString("World", true);
 
             String[] parts = {
-                "The difference between the right word ",
-                "and the almost right word is the difference ",
-                "between lightning and a lightning bug."
+                    "The difference between the right word ",
+                    "and the almost right word is the difference ",
+                    "between lightning and a lightning bug."
             };
 
             remote.sendPartialBytes(BufferUtil.toBuffer(parts[0]), false);
@@ -254,8 +225,7 @@ public class WebSocketClientTest
     }
 
     @Test
-    public void testBasicEchoUsingCallback() throws Exception
-    {
+    public void testBasicEchoUsingCallback() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -265,8 +235,7 @@ public class WebSocketClientTest
         request.setSubProtocols("echo");
         Future<Session> future = client.connect(cliSock, wsUri, request);
 
-        try (Session sess = future.get(5, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(5, TimeUnit.SECONDS)) {
             assertThat("Session", sess, notNullValue());
             assertThat("Session.open", sess.isOpen(), is(true));
             assertThat("Session.upgradeRequest", sess.getUpgradeRequest(), notNullValue());
@@ -287,8 +256,7 @@ public class WebSocketClientTest
     }
 
     @Test
-    public void testBasicEchoFromServer() throws Exception
-    {
+    public void testBasicEchoFromServer() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -296,8 +264,7 @@ public class WebSocketClientTest
         URI wsUri = WSURI.toWebsocket(server.getURI().resolve("/connect-msg"));
         Future<Session> future = client.connect(cliSock, wsUri);
 
-        try (Session sess = future.get(5, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(5, TimeUnit.SECONDS)) {
             // Validate connect
             assertThat("Session", sess, notNullValue());
             assertThat("Session.open", sess.isOpen(), is(true));
@@ -311,8 +278,7 @@ public class WebSocketClientTest
     }
 
     @Test
-    public void testLocalRemoteAddress() throws Exception
-    {
+    public void testLocalRemoteAddress() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setIdleTimeout(10000);
@@ -322,8 +288,7 @@ public class WebSocketClientTest
         request.setSubProtocols("echo");
         Future<Session> future = client.connect(cliSock, wsUri, request);
 
-        try (Session sess = future.get(5, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(5, TimeUnit.SECONDS)) {
             Assertions.assertTrue(cliSock.openLatch.await(1, TimeUnit.SECONDS));
 
             InetSocketAddress local = cliSock.getSession().getLocalAddress();
@@ -348,8 +313,7 @@ public class WebSocketClientTest
      * @throws Exception on test failure
      */
     @Test
-    public void testMaxMessageSize() throws Exception
-    {
+    public void testMaxMessageSize() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setMaxTextMessageSize(100 * 1024);
@@ -358,13 +322,12 @@ public class WebSocketClientTest
         URI wsUri = WSURI.toWebsocket(server.getURI().resolve("/anno-max-message"));
         Future<Session> future = client.connect(cliSock, wsUri);
 
-        try (Session sess = future.get(5, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(5, TimeUnit.SECONDS)) {
             // Create string that is larger than default size of 64k
             // but smaller than maxMessageSize of 100k
             int size = 80 * 1024;
             byte[] buf = new byte[size];
-            Arrays.fill(buf, (byte)'x');
+            Arrays.fill(buf, (byte) 'x');
             String msg = StringUtil.toUTF8String(buf, 0, buf.length);
 
             sess.getRemote().sendString(msg);
@@ -376,8 +339,7 @@ public class WebSocketClientTest
     }
 
     @Test
-    public void testParameterMap() throws Exception
-    {
+    public void testParameterMap() throws Exception {
         CloseTrackingEndpoint cliSock = new CloseTrackingEndpoint();
 
         client.getPolicy().setMaxTextMessageSize(100 * 1024);
@@ -387,8 +349,7 @@ public class WebSocketClientTest
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         Future<Session> future = client.connect(cliSock, wsUri, request);
 
-        try (Session sess = future.get(5, TimeUnit.SECONDS))
-        {
+        try (Session sess = future.get(5, TimeUnit.SECONDS)) {
             UpgradeRequest req = sess.getUpgradeRequest();
             assertThat("Upgrade Request", req, notNullValue());
 

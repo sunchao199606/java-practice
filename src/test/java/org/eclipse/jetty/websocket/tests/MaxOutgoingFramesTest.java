@@ -64,6 +64,7 @@ public class MaxOutgoingFramesTest
 
         server = new Server();
         connector = new ServerConnector(server);
+        connector.setPort(8080);
         server.addConnector(connector);
 
         ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);

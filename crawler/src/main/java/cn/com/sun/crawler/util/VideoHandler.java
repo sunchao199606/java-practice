@@ -305,7 +305,13 @@ public class VideoHandler {
 
     public boolean downloadFromM3U8(Video video, File workspace) {
         AtomicBoolean success = new AtomicBoolean(true);
-        M3U8 m3u8 = getM3U8ByUrl(video.getDownloadUrl());
+        M3U8 m3u8;
+        try {
+            m3u8 = getM3U8ByUrl(video.getDownloadUrl());
+        } catch (Exception e) {
+            logger.error("get m3u8 failed : " + e.getMessage(), e);
+            return false;
+        }
         // 为了兼容单个文件下载
         if (video.getId().isEmpty()) {
             video.setId("playvthumb_" + m3u8.getId());

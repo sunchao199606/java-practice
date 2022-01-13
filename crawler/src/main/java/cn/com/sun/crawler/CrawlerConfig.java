@@ -16,9 +16,9 @@ public class CrawlerConfig {
     public static final String EXT = ".mp4";
     public static final String BROWSER_PATH = "C://Program Files//Google//Chrome//Application//chrome.exe";
     public static final String HTTP_PROXY_HOSTNAME = "localhost";
-    public static final String FILE_SAVE_PATH = "F://Download//crawler//";
-    public static final String AUTHOR_PATH = "F://Download//crawler//author//";
-    public static final String KEYWORD_PATH = "F://Download//crawler//keyword//";
+    public static final String FILE_SAVE_PATH = "E://Download//crawler//";
+    public static final String AUTHOR_PATH = "E://Download//crawler//author//";
+    public static final String KEYWORD_PATH = "E://Download//crawler//keyword//";
     public static final File JSON = new File(FILE_SAVE_PATH + "crawler.json");
     public static final String KEYWORD_URL = "/search_result.php";
     //__cfduid=da2d24a1298789d9a151168cb3efaba2a1611119632; CLIPSHARE=5f6vnld23jeg0tnduk98s64id3;

@@ -2,7 +2,11 @@ package cn.com.sun;
 
 import com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
 import com.sun.org.apache.xerces.internal.util.URI;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
@@ -10,6 +14,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,11 +32,12 @@ import java.util.stream.IntStream;
  */
 public class MainTest {
     @Test
-    public void stringTest(){
+    public void stringTest() {
         String A = "abc";
         String B = "abc";
         System.out.println(A == B);
     }
+
     @Test
     public void testForEach() {
         List<Integer> list = IntStream.rangeClosed(1, 100).boxed().collect(Collectors.toList());
@@ -165,8 +173,9 @@ public class MainTest {
         boxMethod(false);
         boxMethod(false);
     }
+
     @Test
-    public void testUUid(){
+    public void testUUid() {
         System.out.println(UUID.randomUUID());
     }
 
@@ -175,6 +184,70 @@ public class MainTest {
         Runtime.getRuntime().exec("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe http://jd.com");
     }
 
+    @Test
+    public void testRect() {
+        //Rectangle allBounds = Display.getDefault().getBounds();
+        //logger.info("内嵌信雅达双屏allBounds:" + allBounds.toString());
+//        if (allBounds.width > 2000) {
+//            Rectangle monitor1Rec = Display.getDefault().getMonitors()[0]
+//                    .getClientArea();
+//            Rectangle monitor2Rec = Display.getDefault().getMonitors()[1]
+//                    .getClientArea();
+//        }
+        Display.getDefault().syncExec(() -> {
+            Shell shell = new Shell(Display.getDefault());
+            shell.open();
+            Monitor primaryMonitor = Display.getDefault().getPrimaryMonitor();
+            Monitor extendMonitor = null;
+            Monitor[] monitors = Display.getDefault().getMonitors();
+            for (Monitor monitor : monitors) {
+                if (primaryMonitor == monitor) continue;
+                extendMonitor = monitor;
+            }
+            System.out.println("all bounds ： " + Display.getDefault().getBounds());
+            System.out.println("primary monitor : " + primaryMonitor.getBounds());
+            System.out.println("extend monitor : " + extendMonitor.getBounds());
+            System.out.println("extend location : " + extendMonitor.getClientArea());
+            shell.setText("Snippet 120");
+            shell.setLocation(extendMonitor.getBounds().x, extendMonitor.getBounds().y);
+            //shell.setSize(extendMonitor.getBounds().width, extendMonitor.getBounds().height);
+            shell.setMaximized(true);
+//            Monitor[] monitors = Display.getDefault().getMonitors();
+//            Monitor pm = Display.getDefault().getPrimaryMonitor();
+//            System.out.println("all bounds ： " + Display.getDefault().getBounds());
+//            System.out.println("primary monitor : " + pm.getBounds());
+//            for (Monitor monitor : monitors) {
+//                System.out.println(monitor.getBounds());
+//            }
+//            Display.getDefault().getPrimaryMonitor();
+//            Rectangle bounds = primary.getBounds();
+//            Rectangle rect = shell.getBounds();
+//            int x = bounds.x + (bounds.width - rect.width) / 2;
+//            int y = bounds.y + (bounds.height - rect.height) / 2;
+//            shell.setLocation(x, y);
+            //shell.open();
+            System.out.println("shell size : " + shell.getBounds());
+            while (!shell.isDisposed()) {
+                if (!Display.getDefault().readAndDispatch()) Display.getDefault().sleep();
+            }
+        });
+    }
+
+
+    @Test
+    public void oppDns() throws UnknownHostException {
+        InetAddress addresses = Inet4Address.getByName("118.193.98.63");
+
+        System.out.println(addresses.getHostAddress());
+
+    }
+
+    @Test
+    public void jettyHttpClient() throws Exception {
+        HttpClient httpClient = new HttpClient();
+        httpClient.start();
+        System.out.println(httpClient.GET("http://192.9.200.111:57273/aarm/getPreference").getContentAsString());
+    }
 
     private void boxMethod(Boolean yes) {
         System.out.println("box" + yes);

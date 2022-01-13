@@ -395,7 +395,7 @@ public class VideoHandler {
         if (conn.getResponseCode() == 200) {
             String realUrl = conn.getURL().toString();
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String basePath = realUrl.substring(0, realUrl.lastIndexOf(".m3u8?") - 6);
+            String basePath = realUrl.substring(0, realUrl.lastIndexOf(".m3u8") - 6);
             M3U8 m3U8 = new M3U8();
             m3U8.setBasePath(basePath);
             m3U8.setId(basePath.substring(basePath.length() - 7, basePath.length() - 1));

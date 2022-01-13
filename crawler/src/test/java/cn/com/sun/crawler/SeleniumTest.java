@@ -2,16 +2,19 @@ package cn.com.sun.crawler;
 
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
-
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 
 /**
  * @Description : Selenium测试
@@ -30,7 +33,7 @@ public class SeleniumTest {
         WebDriver driver = new ChromeDriver(options);
         System.out.println(driver.getWindowHandle());
         //driver.manage().window().setSize(new Dimension(1,1));
-        driver.manage().window().setPosition(new Point(-1000,-1000));
+        driver.manage().window().setPosition(new Point(-1000, -1000));
         //driver.manage().window().setSize();
         WebDriverWait wait = new WebDriverWait(driver, 20);
         try {
@@ -47,6 +50,18 @@ public class SeleniumTest {
             e.printStackTrace();
         } finally {
             driver.quit();
+        }
+    }
+
+
+    @Test
+    public void testLocalLoop() throws IOException {
+        ServerSocket serverSocket = new ServerSocket(8888);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            new Thread(() -> {
+                System.out.println("new socket : " + socket.getLocalSocketAddress());
+            }).start();
         }
     }
 }

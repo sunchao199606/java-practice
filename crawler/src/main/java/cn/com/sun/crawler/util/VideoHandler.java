@@ -440,7 +440,7 @@ public class VideoHandler {
             return Integer.compare(num1, num2);
         });
         if (files.length > 1) {
-            String ffmpegPath = "D:\\dev\\ffmpeg\\bin\\ffmpeg.exe";// 此处是配置地址，可自行写死如“”
+            String ffmpegPath = "D:\\dev\\software\\ffmpeg\\bin\\ffmpeg.exe";// 此处是配置地址，可自行写死如“”
             String outputPath = outputFile.getPath();
             String txtPath = tempDir.getPath() + File.separator + "fileList.txt";
             try (FileOutputStream fos = new FileOutputStream(new File(txtPath))) {

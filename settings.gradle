@@ -7,7 +7,7 @@
  * in the user manual at https://docs.gradle.org/5.5/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'JavaDemo'
+rootProject.name = 'java-practice'
 include 'crawler'
 include 'jcef'
 

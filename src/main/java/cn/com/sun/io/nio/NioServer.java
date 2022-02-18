@@ -23,7 +23,6 @@ public class NioServer {
     public boolean startServer(int port) {
         try {
             this.port = port;
-            selector = Selector.open();
             //打开监听通道
             ServerSocketChannel server = ServerSocketChannel.open();
             //绑定端口
@@ -78,26 +77,26 @@ public class NioServer {
 
     private void doWrite(SelectionKey key) throws IOException {
         //获取对应的socket
-        SocketChannel socket = (SocketChannel) key.channel();
+        SocketChannel channel = (SocketChannel) key.channel();
         //获取key上的附件
         String content = (String) key.attachment();
-        socket.write(ByteBuffer.wrap(content.getBytes()));
-        socket.close();
+        channel.write(ByteBuffer.wrap(content.getBytes()));
+        channel.close();
     }
 
     private void doRead(SelectionKey key) throws IOException {
         //获取对应的socket
-        SocketChannel socket = (SocketChannel) key.channel();
+        SocketChannel channel = (SocketChannel) key.channel();
         //设置一个读取数据的Buffer 大小为1024
         ByteBuffer buff = ByteBuffer.allocate(1024);
         StringBuilder content = new StringBuilder();
 
-        while (socket.read(buff) > 0) {
+        while (channel.read(buff) > 0) {
             buff.flip();
             content.append(new String(buff.array(), "utf-8"));
         }
         //注册selector，并设置为可写模式
-        key = socket.register(selector, SelectionKey.OP_WRITE);
+        key = channel.register(selector, SelectionKey.OP_WRITE);
         //在key上携带一个附件(附近就是之后要写的内容)
         key.attach("服务端已收到:" + content);
         System.out.println("读取内容：" + content);

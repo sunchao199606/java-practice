@@ -9,5 +9,4 @@
 
 rootProject.name = 'java-practice'
 include 'crawler'
-include 'jcef'
 

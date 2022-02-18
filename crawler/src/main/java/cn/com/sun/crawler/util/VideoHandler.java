@@ -6,6 +6,7 @@ import cn.com.sun.crawler.entity.Video;
 import cn.com.sun.crawler.impl.PornyCrawler;
 import cn.com.sun.crawler.m3u8.M3U8;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -390,7 +391,7 @@ public class VideoHandler {
     }
 
     private M3U8 getM3U8ByUrl(String m3u8Url) throws Exception {
-        m3u8Url = m3u8Url.replace("cdn.workgreat14.live","la.killcovid2021.com");
+        m3u8Url = m3u8Url.replace("cdn.workgreat14.live", "la.killcovid2021.com");
         HttpURLConnection conn = (HttpURLConnection) new URL(m3u8Url).openConnection();
         if (conn.getResponseCode() == 200) {
             String realUrl = conn.getURL().toString();
@@ -463,6 +464,13 @@ public class VideoHandler {
             command.append(" copy ");// -c copy 避免解码，提高处理速度
             command.append(outputPath);
             exeCommand(command.toString());
+        } else {
+            // copy
+            try {
+                Files.copy(files[0], outputFile);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 

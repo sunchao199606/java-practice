@@ -1,4 +1,4 @@
-package cn.com.sun.algorithm;
+package cn.com.sun.algorithm.other;
 
 /**
  * @Description : 斐波那契数列

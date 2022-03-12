@@ -65,3 +65,7 @@ dependencies {
     api group: 'org.eclipse.jetty', name: 'jetty-jmx', version: '9.4.44.v20210927'
 
 }
+test {
+    // Junit5必须指定测试用例执行平台为Junit
+    useJUnitPlatform()
+}

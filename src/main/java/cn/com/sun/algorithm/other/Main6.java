@@ -1,4 +1,4 @@
-package cn.com.sun.algorithm;
+package cn.com.sun.algorithm.other;
 
 import java.util.Arrays;
 import java.util.Scanner;

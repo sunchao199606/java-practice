@@ -1,48 +1,76 @@
 package cn.com.sun.algorithm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+/**
+ * @Author : mockingbird
+ * @Date : 2022/3/18 15:09
+ * @Description :
+ */
 public class Main4 {
-//    一个字符串，首尾相连，计算出现偶数个’o’的字符串最长的长度
-//    例子：
-//    alolobo
-//    输出：6
-//    looxdolx
-//    输出：7
-//    bcbcbc
-//    输出：6
+    /*
+      输入字符串s输出s中包含所有整数的最小和，
+      说明：
+      1.字符串s只包含a~z,A~Z,+,-，
+      2.合法的整数包括正整数，一个或者多个0-9组成，如：0,2,3,002,102
+      3.负整数，负号开头，数字部分由一个或者多个0-9组成，如-2,-012,-23,-00023
+      输入描述：包含数字的字符串
+      输出描述：所有整数的最小和
+      示例：
+        输入：
+          bb1234aa
+      　输出
+          10
+      　输入：
+          bb12-34aa
+      　输出：
+          -31
+      说明：1+2-(34)=-31
+       */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+
         String input = scanner.nextLine();
-        // 从index = 0 开始遍历 window从2开始最大到length
-        int inputLength = input.length();
-        int maxLength = 0;
-        for (int windowSize = 2; windowSize <= inputLength; windowSize++) {
-            for (int index = 0; index < inputLength; index++) {
-                int beginIndex = index;
-                int endIndex = index + windowSize;
-                String in = "";
-                String overflow = "";
-                if (endIndex < inputLength) {
-                    in = input.substring(beginIndex, endIndex);
-                } else {
-                    in = input.substring(beginIndex);
-                    int overflowLength = index + windowSize - inputLength;
-                    overflow = input.substring(0, overflowLength);
-                }
-                //遍历字符串
-                String all = in + overflow;
-                int charNum = 0;
-                for (char c : all.toCharArray()) {
-                    if (c == 'o') {
-                        charNum++;
+        int index = 0;
+        // 正数列表
+        List<Integer> negativeList = new ArrayList<>();
+        // 负数列表
+        List<Integer> positiveList = new ArrayList<>();
+        while (index < input.length()) {
+            char c = input.charAt(index);
+            //如果是-继续往下遍历
+            if (c == 45) {
+                // 拿到最长负数
+                StringBuilder builder = new StringBuilder("-");
+                int tempIndex = index + 1;
+                // 当下一个字符为- 或者数字时
+                while (45 == input.charAt(tempIndex) || Character.isDigit(input.charAt(tempIndex))) {
+                    //如果是连续的-，则直接忽略
+                    if (45 == input.charAt(tempIndex) && input.charAt(tempIndex - 1) == 45) {
+                        tempIndex++;
+                        continue;
                     }
+                    //
+                    if (45 == input.charAt(tempIndex) && Character.isDigit(input.charAt(tempIndex - 1))) {
+                        break;
+                    }
+                    builder.append(input.charAt(tempIndex));
+                    tempIndex++;
                 }
-                if (charNum % 2 == 0) {
-                    maxLength = all.length() > maxLength ? all.length() : maxLength;
-                }
+                negativeList.add(Integer.parseInt(builder.toString()));
+                index = tempIndex;
+                continue;
             }
+            // 正数
+            if ((48 <= c && c <= 57)) {
+                positiveList.add(Character.getNumericValue(c));
+            }
+            index++;
         }
-        System.out.println(maxLength);
+        int sumPositive = positiveList.stream().mapToInt(Integer::intValue).sum();
+        int sumNegative = negativeList.stream().mapToInt(Integer::intValue).sum();
+        System.out.println(sumPositive + sumNegative);
     }
 }

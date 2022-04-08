@@ -20,9 +20,12 @@ public class CommonTest {
             e.printStackTrace();
         }
     }
-    @Test
-    public void huzi(int a, int b) {
 
+    @Test
+    public void subString() {
+        // endIndex可以超
+        System.out.println("abcd".substring(0, 4));
+        System.out.println("abcd".charAt(4));
     }
 
 }

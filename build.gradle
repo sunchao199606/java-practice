@@ -63,6 +63,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-jmx
     api group: 'org.eclipse.jetty', name: 'jetty-jmx', version: '9.4.44.v20210927'
     api group: 'org.eclipse.jetty', name: 'jetty-jmx', version: '9.4.44.v20210927'
+    api 'com.google.guava:guava:31.1-jre'
 
 }
 test {
